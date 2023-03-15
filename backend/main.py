@@ -9,6 +9,8 @@ from SQL import execute_read_query
 conn = create_connection('cis4375project.ceaacvjhw0y3.us-east-1.rds.amazonaws.com', 'admin', 'C!s4e75Gr0up3!', 'CIS4375Project')
 
 
-query = 'SELECT * FROM Account;'
+query = 'SELECT * from Account;'
 
-execute_read_query(conn, query)
+Accountinfo = execute_read_query(conn, query)
+
+print(Accountinfo)
