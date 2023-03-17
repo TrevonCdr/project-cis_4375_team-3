@@ -15,24 +15,30 @@ app.config["DEBUG"] = True #all to show errors in browser
 
 conn = create_connection('cis4375project.ceaacvjhw0y3.us-east-1.rds.amazonaws.com', 'admin', 'C!s4e75Gr0up3!', 'CIS4375Project')
 
-#localhost:5000/api/Account
-@app.route('/api/Account', methods=['GET'])
-def api_all_accounts():
+#localhost:5000/api/Contacttype
+@app.route('/api/Contacttype', methods=['GET'])
+def api_contacttype():
 
-    #query for sql to select account table:
+    #query for sql to see contact type table:
 
-    query = "SELECT * FROM Account"
+    query = """SELECT contact_method_status
+AS 'Most Used Contact Type'FROM CIS4375Project.Customer
+inner join CIS4375Project.ContactMethod
+ON Customer.contact_method_id = ContactMethod.contact_method_id
+Group by Customer.contact_method_id
+order by count(*) DESC
+Limit 1;"""
 
-    Accountinfo = execute_read_query(conn, query)
+    methodinfo = execute_read_query(conn, query)
 
     #adds the data to a blank list then returns it with jsonify:
 
-    accountdata = []
+    contactmethoddata = []
 
-    for account in Accountinfo:
-        accountdata.append(account)
+    for method in methodinfo:
+        contactmethoddata.append(method)
     
-    return jsonify(accountdata)
+    return jsonify(contactmethoddata)
 
 
 app.run()
