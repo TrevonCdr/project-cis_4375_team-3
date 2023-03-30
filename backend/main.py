@@ -40,5 +40,45 @@ Limit 1;"""
     
     return jsonify(contactmethoddata)
 
+#localhost:5000/api/MostandLeastCommonService
+@app.route('/api/MostandLeastCommonService', methods=['GET'])
+def api_MostLeastCommon():
+
+    #query for sql to see contact type table:
+
+    query1 = """SELECT service_type as 'Most Common Service' from CIS4375Project.Service
+    inner join CIS4375Project.AppointmentService
+    ON AppointmentService.service_id = Service.service_id
+    inner join CIS4375Project.Appointment
+    ON AppointmentService.appointment_id = Appointment.appointment_id
+    Group by AppointmentService.service_id
+    Order by count(AppointmentService.service_id) desc
+    limit 1;"""
+
+    query2 = """SELECT service_type as 'Least Common Service' from CIS4375Project.Service
+inner join CIS4375Project.AppointmentService
+ON AppointmentService.service_id = Service.service_id
+inner join CIS4375Project.Appointment
+ON AppointmentService.appointment_id = Appointment.appointment_id
+Group by AppointmentService.service_id
+Order by count(AppointmentService.service_id) asc
+LIMIT 1;"""
+
+    serviceinfo = execute_read_query(conn, query1)
+    serviceinfo2 = execute_read_query(conn, query2)
+
+    #adds the data to a blank list then returns it with jsonify:
+
+    commonservicedata = []
+    leastcommondata = []
+
+    for service in serviceinfo:
+        commonservicedata.append(service)
+
+    for service in serviceinfo2:
+        leastcommondata.append(service)
+    
+    return jsonify(commonservicedata,leastcommondata)
+
 
 app.run()
