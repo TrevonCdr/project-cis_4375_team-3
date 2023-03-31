@@ -80,5 +80,42 @@ LIMIT 1;"""
     
     return jsonify(commonservicedata,leastcommondata)
 
+@app.route('/api/add/appointment', methods=['POST'])
+def add_appointment():
+    request_data = request.get_json()
+    #newid = request_data['id']
+    newcustid = request_data['customer_id']
+    newemployee_id = request_data['employee_id']
+    newappointment_date = request_data['appointment_date']
+    newcustomer_note = request_data['customer_note']
+    newappointment_status = request_data['appointment_status']
+    newappointment_total = request_data['appointment_total']
+    #sql query for inserting appointment then execute with given data
+    #if newcustomer_note has 'haircut'
+    #then 
+    #service_id= '1'
+
+
+
+    query_insert_appointment = """INSERT
+    INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total) 
+    values ('%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total)
+
+    query_insert_AppointmentService = "INSERT INTO AppointmentService (service_id, appointment_id) values (1,12)"
+    execute_query(conn, query_insert_appointment)
+
+
+    execute_query(conn, query_insert_AppointmentService)
+
+    return 'Add request successful!' 
+
+
+"""BEGIN;
+INSERT
+INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total) 
+values ('%s','%s','%s','%s','%s','%s') %(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total)
+INSERT INTO AppointmentService (service_id, appointment_id) values (1,12);
+COMMIT;"""
+
 
 app.run()
