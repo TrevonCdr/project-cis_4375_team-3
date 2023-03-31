@@ -119,5 +119,3 @@ COMMIT;"""
 
 
 app.run()
-
-#test
