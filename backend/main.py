@@ -190,8 +190,11 @@ def api_CustomerEarnings():
 
 
 
+    
+@app.route('/api/Appointments', methods=['GET'])
+def api_appointments():
     #query for sql to see appointment table:
-
+    
     query = """Select * from Appointment;"""
 
     appointmentinfo = execute_read_query(conn, query)
