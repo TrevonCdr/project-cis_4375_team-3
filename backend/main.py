@@ -80,6 +80,80 @@ LIMIT 1;"""
     
     return jsonify(commonservicedata,leastcommondata)
 
+#query for Earnings per year, week, day
+#localhost:5000/api/Earnings
+@app.route('/api/Earnings', methods=['GET'])
+def api_Earnings():
+        # Earnings Per Week
+        query1 = """SELECT STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') AS 'Week Start', 
+       STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') AS 'Week End',
+        SUM(appointment_total) AS Earnings
+        FROM Appointment
+        WHERE appointment_status <> 'CANCELED'
+        GROUP BY YEARWEEK(appointment_date)
+        ORDER BY YEARWEEK(appointment_date);"""
+        
+        # Earnings Per Month and Year
+        query2 = """SELECT year(appointment_date) as "Year", monthname(appointment_date) as "Month", sum(appointment_total) as "Earnings"
+        from Appointment
+        WHERE appointment_status <> 'CANCELED'
+        group by year(appointment_date),month(appointment_date)
+        order by year(appointment_date),month(appointment_date);"""
+      
+        #Earnings for the current date
+        query3 = """SELECT curdate() as "Today's date", sum(appointment_total) "Today's earnings"
+        from Appointment
+        where appointment_date = curdate()
+        AND appointment_status <> 'CANCELED';"""
+
+        #Earnings Per Customer
+        query4 = """SELECT Concat(Customer.first_name,' ', Customer.last_name) as 'Customer Name', sum(appointment_total) as 'Earnings' from Appointment
+        join Customer
+        on Appointment.customer_id = Customer.customer_id
+        group by Appointment.customer_id;"""
+
+
+        earningsinfo = execute_read_query(conn, query1)
+        earningsinfo2 = execute_read_query(conn, query2)
+        earningsinfo3 = execute_read_query(conn, query3)
+        earningsinfo4 = execute_read_query(conn, query4)
+
+    #adds the data to a blank list then returns it with jsonify:
+
+        earningsperweek = []
+        earningsweeklymonthly = []
+        earningscurrent = []
+        earningspercustomer= []
+        
+        for earnings in earningsinfo:
+            earningsperweek.append(earnings)
+
+        for earnings in earningsinfo2:
+            earningsweeklymonthly.append(earnings)
+        
+        for earnings in  earningsinfo3:
+            earningscurrent.append(earnings)
+
+        for earnings in  earningsinfo4:
+            earningspercustomer.append(earnings)
+    
+        return jsonify(earningsperweek,earningsweeklymonthly,earningscurrent,earningspercustomer)
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
 @app.route('/api/add/appointment', methods=['POST'])
 def add_appointment():
     request_data = request.get_json()
@@ -116,6 +190,8 @@ INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, ap
 values ('%s','%s','%s','%s','%s','%s') %(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total)
 INSERT INTO AppointmentService (service_id, appointment_id) values (1,12);
 COMMIT;"""
+
+
 
 
 app.run()
