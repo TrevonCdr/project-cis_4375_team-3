@@ -4,7 +4,7 @@ cd backend
 ```
 Follow instructions in backend README
 
-## Frontend Vue 3 Application
+## Frontend Ejs Application
 ```
 cd frontend
 ```
