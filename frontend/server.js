@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 app.get('/customerhome', function(req, res) {
     
     // get customer's appointments' from api
-    axios.get(`http://localhost:5000/api/AppointmentsCustomer`)
+    axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
         .then((response)=>{
     
         var appointments = response.data;
