@@ -33,3 +33,12 @@ def execute_read_query(connection, query):
         return result
     except Error as e:
         print(f"The error '{e}' occured")
+
+def new_read(query):
+    conn = create_connection('cis4375project.ceaacvjhw0y3.us-east-1.rds.amazonaws.com', 'admin', 'C!s4e75Gr0up3!', 'CIS4375Project')
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    conn.close()
+    return result
+
