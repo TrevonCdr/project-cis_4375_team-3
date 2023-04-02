@@ -148,7 +148,7 @@ def api_CustomerEarnings():
 #Busiest Day of the Week
 #localhost:5000/api/busiestdayofweek
 @app.route('/api/busiestdayofweek', methods=['GET'])
-def api_CustomerEarnings():
+def api_CustomerEarningsDay():
             query1 = """SELECT DAYNAME(appointment_date) as WeekDay, COUNT(*) as 'Number of Appointments'
             FROM Appointment
             GROUP BY DAYNAME(appointment_date)
@@ -166,7 +166,7 @@ def api_CustomerEarnings():
 #Customers that most cancel appointments
 #localhost:5000/api/customersmostcancel
 @app.route('/api/customersmostcancel', methods=['GET'])
-def api_CustomerEarnings():
+def api_CustomerCancel():
             query1 = """SELECT concat(first_name, ' ', last_name) as Name, count(*) as 'Canceled Appointments'
             from CIS4375Project.Appointment a
             join CIS4375Project.Customer c on a.customer_id = c.customer_id
@@ -183,14 +183,6 @@ def api_CustomerEarnings():
             return jsonify(mostcancelled)
 
 
-
-
-
-
-
-
-
-    
 @app.route('/api/Appointments', methods=['GET'])
 def api_appointments():
     #query for sql to see appointment table:
@@ -207,10 +199,6 @@ def api_appointments():
         appointmentdata.append(appt)
     
     return jsonify(appointmentdata)
-
-
-
-
 
     
 @app.route('/api/add/appointment', methods=['POST'])
@@ -232,6 +220,28 @@ def add_appointment():
     execute_query(conn, query_insert_appointment)
 
     return 'Add request successful!' 
+
+@app.route('/api/AppointmentsCustomer', methods=['GET'])
+def api_appointmentscust():
+    #query for sql to see appointment table:
+   
+    query = """Select Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
+appointment_date, appointment_status, email,
+phone_number From Appointment
+join Customer
+on Appointment.customer_id = Customer.customer_id;
+"""
+ 
+    appointmentinfo = execute_read_query(conn, query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointmentdata = []
+ 
+    for appt in appointmentinfo:
+        appointmentdata.append(appt)
+   
+    return jsonify(appointmentdata)
 
 
 
