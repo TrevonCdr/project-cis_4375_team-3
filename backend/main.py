@@ -204,9 +204,20 @@ def api_appointments():
 @app.route('/api/add/appointment', methods=['POST'])
 def add_appointment():
     request_data = request.get_json()
-    #newid = request_data['id']
+
     newcustid = request_data['customer_id']
-    newemployee_id = request_data['employee_id']
+
+    #Getting employee_id based on name given:
+
+    if 'Lennin Repizo' in request_data['employee_name']:
+        newemployee_id = 1
+    elif 'Jayme Scard' in request_data['employee_name']:
+        newemployee_id = 2
+    elif 'Valeriano Avila' in request_data['employee_name']:
+        newemployee_id = 3
+    elif 'Mariana Alvarez' in request_data['employee_name']:
+        newemployee_id = 4
+
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_status = request_data['appointment_status']
