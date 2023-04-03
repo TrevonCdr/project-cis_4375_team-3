@@ -9,7 +9,7 @@ app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
     res.render('pages/index.ejs')
-})
+});
 
 app.get('/customerhome', function(req, res) {
     
@@ -26,6 +26,11 @@ app.get('/customerhome', function(req, res) {
         });
     });       
     
+});
+
+
+app.get('/logout', (req, res) => {
+    res.render('pages/logout.ejs')
 });
 
 app.listen(port);
