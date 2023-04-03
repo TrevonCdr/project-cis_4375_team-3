@@ -148,7 +148,7 @@ def api_CustomerEarnings():
 #Busiest Day of the Week
 #localhost:5000/api/busiestdayofweek
 @app.route('/api/busiestdayofweek', methods=['GET'])
-def api_CustomerEarnings():
+def api_busyday():
             query1 = """SELECT DAYNAME(appointment_date) as WeekDay, COUNT(*) as 'Number of Appointments'
             FROM Appointment
             GROUP BY DAYNAME(appointment_date)
@@ -166,7 +166,7 @@ def api_CustomerEarnings():
 #Customers that most cancel appointments
 #localhost:5000/api/customersmostcancel
 @app.route('/api/customersmostcancel', methods=['GET'])
-def api_CustomerEarnings():
+def api_customersmostcancel():
             query1 = """SELECT concat(first_name, ' ', last_name) as Name, count(*) as 'Canceled Appointments'
             from CIS4375Project.Appointment a
             join CIS4375Project.Customer c on a.customer_id = c.customer_id
