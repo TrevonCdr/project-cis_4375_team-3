@@ -273,5 +273,47 @@ GROUP BY
    
     return jsonify(appointmentdata)
 
+# (report 9) Most and Least Profitable Service To date
+@app.route('/api/ServiceProfitability', methods=['GET'])
+def api_profitability():
+     
+# Most Profitable
+    query1 = """select service_type as 'Most Profitable Service', sum(price) as 'Total Earned'from
+    CIS4375Project.Service inner join CIS4375Project.AppointmentService
+    on Service.service_id =  AppointmentService.service_id
+    inner join CIS4375Project.Appointment
+    ON AppointmentService.appointment_id = Appointment.appointment_id
+    where appointment_status != 'CANCELED'
+    group by service_type
+    order by sum(price) desc
+    limit 1;"""
+
+# Least Profitable
+    query2 = """select service_type as 'Least Profitable Service', sum(price) as 'Total Earned'from
+    CIS4375Project.Service inner join CIS4375Project.AppointmentService
+    on Service.service_id =  AppointmentService.service_id
+    inner join CIS4375Project.Appointment
+    ON AppointmentService.appointment_id = Appointment.appointment_id
+    where appointment_status != 'CANCELED'
+    group by service_type
+    order by sum(price) asc
+    limit 1;"""
+
+
+
+    profitinfo = execute_read_query(conn, query1)
+    profitinfo2 = execute_read_query(conn, query2)
+
+
+    mostprofitable = []
+    leastprofitable = []
+
+    for profit in profitinfo:
+            mostprofitable.append(profit)
+    
+    for profit in profitinfo2:
+            leastprofitable.append(profit)
+        
+    return jsonify(mostprofitable,leastprofitable)
 
 app.run()
