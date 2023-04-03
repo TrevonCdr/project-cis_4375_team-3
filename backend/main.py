@@ -243,6 +243,35 @@ on Appointment.customer_id = Customer.customer_id;
    
     return jsonify(appointmentdata)
 
+# (report 7) Number of scheduled appointments per employee
+@app.route('/api/ScheduledAppointmentsPerEmployee', methods=['GET'])
+def api_scheduledperemployee():
+     #SQL query to group the number of scheduled appointments per employee
+
+    query = """SELECT 
+    Employee.employee_first_name, 
+    Employee.employee_last_name, 
+    COUNT(Appointment.appointment_id) AS NumAppointments
+FROM 
+    Employee
+    JOIN Appointment ON Employee.employee_id = Appointment.employee_id
+WHERE 
+    Appointment.appointment_status = 'SCHEDULED'
+GROUP BY 
+    Employee.employee_first_name, 
+    Employee.employee_last_name;
+"""
+ 
+    appointmentinfo = execute_read_query(conn, query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointmentdata = []
+ 
+    for appt in appointmentinfo:
+        appointmentdata.append(appt)
+   
+    return jsonify(appointmentdata)
 
 
 app.run()
