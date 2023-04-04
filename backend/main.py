@@ -344,4 +344,8 @@ def api_profitability():
 
     return jsonify(mostprofitable,leastprofitable, mostprofitableweek)
 
+
+     
+     
+
 app.run()
