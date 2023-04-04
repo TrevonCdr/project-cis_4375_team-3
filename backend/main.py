@@ -182,6 +182,7 @@ def api_CustomerCancel():
                  cancelledappointments.append(appointment)
             return jsonify(mostcancelled)
 
+#Request to see all appointments:
 
 @app.route('/api/Appointments', methods=['GET'])
 def api_appointments():
@@ -200,12 +201,11 @@ def api_appointments():
     
     return jsonify(appointmentdata)
 
+#Request to add an appointments:
     
 @app.route('/api/add/appointment', methods=['POST'])
 def add_appointment():
     request_data = request.get_json()
-
-    newcustid = request_data['customer_id']
 
     #Getting employee_id based on name given:
 
@@ -217,6 +217,15 @@ def add_appointment():
         newemployee_id = 3
     elif 'Mariana Alvarez' in request_data['employee_name']:
         newemployee_id = 4
+    
+    #Getting customer_id based on phone number:
+
+    phonenumber = request_data['phone_number']
+    querycustid = """Select customer_id from Customer where phone_number = '%s'"""%(phonenumber)
+    newcustidinfo = execute_read_query(conn, querycustid)
+    data = newcustidinfo[0]
+    for values in data.values():
+        newcustid = values
 
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
@@ -230,7 +239,8 @@ def add_appointment():
 
     execute_query(conn, query_insert_appointment)
 
-    return 'Add request successful!' 
+    return 'Add request successful!'
+ 
 
 @app.route('/api/AppointmentsCustomer', methods=['GET'])
 def api_appointmentscust():
