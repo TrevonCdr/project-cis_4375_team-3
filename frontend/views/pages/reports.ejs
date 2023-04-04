@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); %>
+</head>
+<body>
+    <header>
+        
+    </header>
+
+    <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center m-10">
+        <div class="bg-body-tertiary border rounded-3">
+            <div id="analytics title" class="container w-auto h-auto m-5">
+                <h1 class="text-center">Lennin Repizo Analytics</h1>
+            </div>
+    
+            <div class="d-flex flex-row align-items-start">
+                <div id="most/least common service" class="container w-auto h-auto m-5">
+                    <h3 class="text-center">Most/Least Common Services</h1>
+                        <ul class="list-unstyled">
+                            <li>Most Common Service: <%= commonservicedata[0][0].Most %></li>
+                            <li>Least Common Service: <%= commonservicedata[1][0].Least %></li>
+                        </ul>
+                </div>
+                <div id="preffered contact method" class="m-5">
+                    <h3 class="text-center">Overall Preferred Contact Method</h1>
+                        <p class="text-center">Most customers prefer to be contacted by <%= contactdata[0].contactType.toLowerCase(); %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

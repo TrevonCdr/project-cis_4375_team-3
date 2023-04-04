@@ -32,5 +32,9 @@ app.get('/customerhome', function(req, res) {
     res.render('pages/customerindex.ejs')
 })
 
+app.get('/reports', function(req, res) {
+    res.render('pages/reports.ejs')
+})
+
 app.listen(port);
 console.log('listening for request on port' + port);
