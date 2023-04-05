@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <%- include('partials'/head); %>
+    </head>
+    <body>
+        <header>
+            <%- include('partials/employeenav'); %>
+            <style>
+                h1 {
+                    padding-top: 30px;
+                    padding-bottom: 30px;
+                    padding-left: 100px;
+                }
+            </style>
+        </header>
+        <h1 class="cover-heading">Upcoming Appointments</h1>
+        <div class="container text-dark">
+            <table class="table table-striped table-bordered w-auto">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Appointment Date</th>
+                        <th>Status</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%appointments.forEach(function(entry) {%>
+                        <tr>
+                            <td><%=entry.Name%></td>
+                            <td><%=entry.appointment_date%></td>
+                            <td><%=entry.appointment_status%></td>
+                            <td><%=entry.email%></td>
+                            <td><%=entry.phone_number%></td>
+                        </tr>
+                    <%});%>
+                </tbody>
+            </table>
+        </div> 
+    </body>
+</html>

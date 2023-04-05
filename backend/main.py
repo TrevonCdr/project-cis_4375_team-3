@@ -6,6 +6,7 @@ from mysql.connector import Error
 from SQL import create_connection
 from SQL import execute_query
 from SQL import execute_read_query
+from SQL import new_read
 
 #setting up the application
 app = flask.Flask(__name__) #sets up the application
@@ -15,21 +16,22 @@ app.config["DEBUG"] = True #all to show errors in browser
 
 conn = create_connection('cis4375project.ceaacvjhw0y3.us-east-1.rds.amazonaws.com', 'admin', 'C!s4e75Gr0up3!', 'CIS4375Project')
 
+# Report 6 Preferred Contact Method
 #localhost:5000/api/Contacttype
 @app.route('/api/Contacttype', methods=['GET'])
 def api_contacttype():
 
     #query for sql to see contact type table:
 
-    query = """SELECT contact_method_status
-AS 'Most Used Contact Type'FROM CIS4375Project.Customer
+    query = """SELECT contact_method_status as 'contactType'
+FROM CIS4375Project.Customer
 inner join CIS4375Project.ContactMethod
 ON Customer.contact_method_id = ContactMethod.contact_method_id
 Group by Customer.contact_method_id
 order by count(*) DESC
 Limit 1;"""
 
-    methodinfo = execute_read_query(conn, query)
+    methodinfo = new_read(query)
 
     #adds the data to a blank list then returns it with jsonify:
 
@@ -46,7 +48,7 @@ def api_MostLeastCommon():
 
     #query for sql to see contact type table:
 
-    query1 = """SELECT service_type as 'Most Common Service' from CIS4375Project.Service
+    query1 = """SELECT service_type as 'Most'from CIS4375Project.Service
     inner join CIS4375Project.AppointmentService
     ON AppointmentService.service_id = Service.service_id
     inner join CIS4375Project.Appointment
@@ -55,7 +57,7 @@ def api_MostLeastCommon():
     Order by count(AppointmentService.service_id) desc
     limit 1;"""
 
-    query2 = """SELECT service_type as 'Least Common Service' from CIS4375Project.Service
+    query2 = """SELECT service_type as 'Least' from CIS4375Project.Service
 inner join CIS4375Project.AppointmentService
 ON AppointmentService.service_id = Service.service_id
 inner join CIS4375Project.Appointment
@@ -64,8 +66,8 @@ Group by AppointmentService.service_id
 Order by count(AppointmentService.service_id) asc
 LIMIT 1;"""
 
-    serviceinfo = execute_read_query(conn, query1)
-    serviceinfo2 = execute_read_query(conn, query2)
+    serviceinfo = new_read(query1)
+    serviceinfo2 = new_read(query2)
 
     #adds the data to a blank list then returns it with jsonify:
 
@@ -182,6 +184,53 @@ def api_CustomerCancel():
                  cancelledappointments.append(appointment)
             return jsonify(mostcancelled)
 
+#Report 4 Number of Appointments per week, month, and year
+@app.route('/api/numberofappointments', methods=['GET'])
+def api_numberofappointments():
+            #Number of Appointments per Week
+            query1 = """SELECT count(appointment_date) as 'Number of Appointments',
+            week(appointment_date) as 'Week of the year', 
+            year(appointment_date) as 'Year'
+            from Appointment
+            group by week(appointment_date),year(appointment_date);"""
+
+            #Number of appointments per month
+            query2 = """SELECT count(appointment_date) as 'Number of Appointments', 
+            monthname(appointment_date),
+            year(appointment_date)
+            from Appointment
+            group by month(appointment_date),year(appointment_date);"""
+
+            #Number of appointments per year
+            query3= """SELECT count(appointment_date) as 'Number of Appointments', 
+            year(appointment_date)
+            from Appointment
+            group by year(appointment_date);;"""
+
+            appointmentsinfo = execute_read_query(conn, query1)
+            appointmentsinfo2 = execute_read_query(conn, query2)
+            appointmentsinfo3 = execute_read_query(conn, query3)
+        
+            appointmentsperweek = []
+            appointmentsmonthly = []
+            appointmentssyearly = []
+               
+            for appointments in appointmentsinfo:
+                appointmentsperweek.append(appointments)
+
+            for appointments in appointmentsinfo2:
+                appointmentsmonthly.append(appointments)
+        
+            for appointments in  appointmentsinfo3:
+                appointmentssyearly.append(appointments)
+
+    
+            return jsonify(appointmentsperweek,appointmentsmonthly,appointmentssyearly)
+
+
+
+
+#Request to see all appointments:
 
 @app.route('/api/Appointments', methods=['GET'])
 def api_appointments():
@@ -200,26 +249,51 @@ def api_appointments():
     
     return jsonify(appointmentdata)
 
+#Request to add an appointments:
     
 @app.route('/api/add/appointment', methods=['POST'])
 def add_appointment():
     request_data = request.get_json()
-    #newid = request_data['id']
-    newcustid = request_data['customer_id']
-    newemployee_id = request_data['employee_id']
+
+    #Getting employee_id based on name given:
+
+    if 'Lennin Repizo' in request_data['employee_name']:
+        newemployee_id = 1
+    elif 'Jayme Scard' in request_data['employee_name']:
+        newemployee_id = 2
+    elif 'Valeriano Avila' in request_data['employee_name']:
+        newemployee_id = 3
+    elif 'Mariana Alvarez' in request_data['employee_name']:
+        newemployee_id = 4
+    
+    #Getting customer_id based on phone number:
+
+    phonenumber = request_data['phone_number']
+    querycustid = """Select customer_id from Customer where phone_number = '%s'"""%(phonenumber)
+    newcustidinfo = execute_read_query(conn, querycustid)
+    data = newcustidinfo[0]
+    for values in data.values():
+        newcustid = values
+
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_status = request_data['appointment_status']
-    newappointment_total = request_data['appointment_total']
 
+    #Appointment Total added based on service_type:
+    if 'Haircut' in request_data['service_type']:
+        newappointment_total = 25
+    else:
+         newappointment_total = 40
 
+    #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
     INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total) 
     values ('%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total)
 
     execute_query(conn, query_insert_appointment)
 
-    return 'Add request successful!' 
+    return 'Add request successful!'
+ 
 
 @app.route('/api/AppointmentsCustomer', methods=['GET'])
 def api_appointmentscust():
@@ -273,7 +347,7 @@ GROUP BY
    
     return jsonify(appointmentdata)
 
-# (report 9) Most and Least Profitable Service To date
+# (report 8) Most and Least Profitable Service To date
 @app.route('/api/ServiceProfitability', methods=['GET'])
 def api_profitability():
      
@@ -348,5 +422,9 @@ def api_profitability():
             leastprofitableweek.append(profit)
 
     return jsonify(mostprofitable,leastprofitable, mostprofitableweek, leastprofitableweek)
+
+
+     
+     
 
 app.run()
