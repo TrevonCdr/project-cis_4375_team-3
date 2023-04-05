@@ -28,8 +28,19 @@ app.get('/employeehome', function(req, res) {
 });
 
 app.get('/customerhome', function(req, res) {
-    res.render('pages/customerindex.ejs')
-})
+     // get customer's appointments' from api
+     axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
+     .then((response)=>{
+ 
+     var appointments = response.data;
+     var tagline = "Here is the data coming from my own API";
+     // render page of appointments
+     res.render('pages/customerindex.ejs', {
+         appointments: appointments,
+         tagline: tagline
+     });
+  });
+});
 
 app.get('/showreports', (req, res) => {
 
