@@ -267,6 +267,24 @@ def api_appointments():
     
     return jsonify(employeedata)
 
+# Request to view all services
+@app.route('/api/Services', methods=['GET'])
+def api_services():
+    #query for sql to see service table:
+    
+    query = """SELECT * from Service;"""
+
+    serviceinfo = execute_read_query(conn, query)
+
+    #adds the data to a blank list then returns it with jsonify:
+
+    servicedata = []
+
+    for service in serviceinfo:
+        servicedata.append(service)
+    
+    return jsonify(servicedata) 
+
 #Request to add an appointments:
     
 @app.route('/api/add/appointment', methods=['POST'])
