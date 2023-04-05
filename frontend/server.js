@@ -25,12 +25,26 @@ app.get('/employeehome', function(req, res) {
             tagline: tagline
         });
     });       
-    
 });
 
 app.get('/customerhome', function(req, res) {
     res.render('pages/customerindex.ejs')
 })
+
+app.get('/showreports', (req, res) => {
+
+    const commonurl = 'http://127.0.0.1:5000/api/MostandLeastCommonService';
+    const contacturl = 'http://127.0.0.1:5000/api/Contacttype'
+
+    axios.all([axios.get(commonurl), axios.get(contacturl)]).then(axios.spread((response1, response2) => {
+        var commonservicedata = response1.data;
+        var contactdata = response2.data;
+        res.render('pages/reports.ejs', {
+            commonservicedata: commonservicedata,
+            contactdata: contactdata
+        });
+    }));
+});
 
 app.listen(port);
 console.log('listening for request on port' + port);

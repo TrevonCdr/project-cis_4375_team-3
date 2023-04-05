@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head'); %>
+</head>
+<body>
+    <header>
+        <%- include('partials/employeenav'); %>
+    </header>
+
+    <div class="d-flex flex-column min-vh-100 align-items-center m-5">
+        <div class="bg-body-tertiary border rounded-3 w-75">
+            <div id="analytics title" class="container w-auto h-auto m-5">
+                <h1 class="text-center">Lennin Repizo Analytics</h1>
+            </div>
+
+            <div class="input-group m-3 w-auto">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="inputGroupSelect01">Select Report</label>
+                </div>
+                <select class="custom-select" id="selectReport">
+                  <option selected>Choose...</option>
+                  <option value="option1">Most and least common services</option>
+                  <option value="option2">Customer's preferred contact method</option>
+                </select>
+              </div>
+
+            <div class="text-center m-3" id="option1" style="display: none;">
+                <div id="most/least common service" class="container w-auto h-auto m-5">
+                    <h3 class="text-center">Most/Least Common Services</h1>
+                        <ul class="list-unstyled">
+                            <li>Most Common Service: <%= commonservicedata[0][0].Most %></li>
+                            <li>Least Common Service: <%= commonservicedata[1][0].Least %></li>
+                        </ul>
+                </div>
+            </div>
+    
+            <div class="text-center m-3" id="option2" style="display: none;">
+                <div id="preffered contact method" class="m-5">
+                    <h3 class="text-center">Overall Preferred Contact Method</h1>
+                        <p class="text-center">Most customers prefer to be contacted by <%= contactdata[0].contactType %></p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const selectReport = document.getElementById('selectReport');
+            const option1div = document.getElementById('option1');
+            const option2div = document.getElementById('option2');
+
+            selectReport.addEventListener("change", () => {
+                const selectedOption = selectReport.value;
+
+                if (selectedOption == "option1") {
+                    option1div.style.display = "block";
+                    option2div.style.display = "none";
+                } else if (selectedOption == "option2") {
+                    option1div.style.display = "none";
+                    option2div.style.display = "block";
+                } else {
+                    option1div.style.display = "none";
+                    option2div.style.display = "none";
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
+
