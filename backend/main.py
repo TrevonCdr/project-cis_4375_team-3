@@ -387,6 +387,18 @@ def api_profitability():
     order by sum(price) desc
     limit 1;"""
 
+    #Least Profitable
+    query4 = """select service_type as 'Least Profitable Service This Week', sum(price) as 'Total Earned' from
+    CIS4375Project.Service inner join CIS4375Project.AppointmentService
+    on Service.service_id =  AppointmentService.service_id
+    inner join CIS4375Project.Appointment
+    ON AppointmentService.appointment_id = Appointment.appointment_id
+    where appointment_status != 'CANCELED'
+    and appointment_date between date_sub(now(), interval 1 week) and now()
+    group by service_type
+    order by sum(price) asc
+    limit 1;"""
+
     query4 = """select service_type as 'LeastProfitableThisWeek', sum(price) as 'TotalEarned' from
     CIS4375Project.Service inner join CIS4375Project.AppointmentService
     on Service.service_id =  AppointmentService.service_id
