@@ -249,6 +249,24 @@ def api_appointments():
     
     return jsonify(appointmentdata)
 
+#Request to view all employees
+@app.route('/api/Employees', methods=['GET'])
+def api_appointments():
+    #query for sql to see employees table:
+    
+    query = """SELECT * from Employee WHERE employee_status = 'ACTIVE';"""
+
+    employeeinfo = execute_read_query(conn, query)
+
+    #adds the data to a blank list then returns it with jsonify:
+
+    employeedata = []
+
+    for employee in employeeinfo:
+        employeedata.append(employee)
+    
+    return jsonify(employeedata)
+
 #Request to add an appointments:
     
 @app.route('/api/add/appointment', methods=['POST'])
