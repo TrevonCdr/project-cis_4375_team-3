@@ -312,14 +312,27 @@ def api_profitability():
     order by sum(price) desc
     limit 1;"""
 
+    #Least Profitable
+    query4 = """select service_type as 'Least Profitable Service This Week', sum(price) as 'Total Earned' from
+    CIS4375Project.Service inner join CIS4375Project.AppointmentService
+    on Service.service_id =  AppointmentService.service_id
+    inner join CIS4375Project.Appointment
+    ON AppointmentService.appointment_id = Appointment.appointment_id
+    where appointment_status != 'CANCELED'
+    and appointment_date between date_sub(now(), interval 1 week) and now()
+    group by service_type
+    order by sum(price) asc
+    limit 1;"""
+
     profitinfo = execute_read_query(conn, query1)
     profitinfo2 = execute_read_query(conn, query2)
     profitinfo3 = execute_read_query(conn, query3)
-
+    profitinfo4 = execute_read_query(conn, query4)
 
     mostprofitable = []
     leastprofitable = []
     mostprofitableweek = []
+    leastprofitableweek = []
 
 
     for profit in profitinfo:
@@ -331,6 +344,9 @@ def api_profitability():
     for profit in profitinfo3:
             mostprofitableweek.append(profit)
 
-    return jsonify(mostprofitable,leastprofitable, mostprofitableweek)
+    for profit in profitinfo4:
+            leastprofitableweek.append(profit)
+
+    return jsonify(mostprofitable,leastprofitable, mostprofitableweek, leastprofitableweek)
 
 app.run()
