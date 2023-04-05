@@ -278,9 +278,14 @@ def add_appointment():
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_status = request_data['appointment_status']
-    newappointment_total = request_data['appointment_total']
 
+    #Appointment Total added based on service_type:
+    if 'Haircut' in request_data['service_type']:
+        newappointment_total = 25
+    else:
+         newappointment_total = 40
 
+    #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
     INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total) 
     values ('%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total)
