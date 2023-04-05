@@ -46,13 +46,29 @@ app.get('/showreports', (req, res) => {
 
     const commonurl = 'http://127.0.0.1:5000/api/MostandLeastCommonService';
     const contacturl = 'http://127.0.0.1:5000/api/Contacttype'
+    const earningsurl = 'http://127.0.0.1:5000/api/Earnings'
+    const custearnings = 'http://127.0.0.1:5000/api/earningspercustomer'
 
-    axios.all([axios.get(commonurl), axios.get(contacturl)]).then(axios.spread((response1, response2) => {
+    axios.all([
+        axios.get(commonurl),
+        axios.get(contacturl),
+        axios.get(earningsurl),
+        axios.get(custearnings)
+    ]).then(axios.spread((
+        response1,
+        response2,
+        response3,
+        response4
+        ) => {
         var commonservicedata = response1.data;
         var contactdata = response2.data;
+        var earningsdata = response3.data;
+        var custearningsdata = response4.data;
         res.render('pages/reports.ejs', {
             commonservicedata: commonservicedata,
-            contactdata: contactdata
+            contactdata: contactdata,
+            earningsdata: earningsdata,
+            custearningsdata: custearningsdata
         });
     }));
 });

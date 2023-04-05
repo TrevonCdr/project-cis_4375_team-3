@@ -87,8 +87,8 @@ LIMIT 1;"""
 @app.route('/api/Earnings', methods=['GET'])
 def api_Earnings():
         # Earnings Per Week
-        query1 = """SELECT STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') AS 'Week Start', 
-       STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') AS 'Week End',
+        query1 = """SELECT STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') AS 'WeekStart', 
+       STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') AS 'WeekEnd',
         SUM(appointment_total) AS Earnings
         FROM Appointment
         WHERE appointment_status <> 'CANCELED'
@@ -103,14 +103,14 @@ def api_Earnings():
         order by year(appointment_date),month(appointment_date);"""
       
         #Earnings for the current date
-        query3 = """SELECT curdate() as "Today's date", sum(appointment_total) "Today's earnings"
+        query3 = """SELECT curdate() as "Today", sum(appointment_total) "Earnings"
         from Appointment
         where appointment_date = curdate()
         AND appointment_status <> 'CANCELED';"""
 
-        earningsinfo = execute_read_query(conn, query1)
-        earningsinfo2 = execute_read_query(conn, query2)
-        earningsinfo3 = execute_read_query(conn, query3)
+        earningsinfo = new_read(query1)
+        earningsinfo2 = new_read(query2)
+        earningsinfo3 = new_read(query3)
 
     #adds the data to a blank list then returns it with jsonify:
         earningsperweek = []
@@ -134,12 +134,12 @@ def api_Earnings():
 @app.route('/api/earningspercustomer', methods=['GET'])
 def api_CustomerEarnings():
         #Earnings Per Customer
-        query1 = """SELECT Concat(Customer.first_name,' ', Customer.last_name) as 'Customer Name', sum(appointment_total) as 'Earnings' from Appointment
+        query1 = """SELECT Concat(Customer.first_name,' ', Customer.last_name) as 'Name', sum(appointment_total) as 'Earnings' from Appointment
         join Customer
         on Appointment.customer_id = Customer.customer_id
         group by Appointment.customer_id;"""
 
-        earningscustomer = execute_read_query(conn, query1)
+        earningscustomer = new_read(query1)
 
         earningspercustomer= []
 
@@ -151,18 +151,18 @@ def api_CustomerEarnings():
 #localhost:5000/api/busiestdayofweek
 @app.route('/api/busiestdayofweek', methods=['GET'])
 def api_CustomerEarningsDay():
-            query1 = """SELECT DAYNAME(appointment_date) as WeekDay, COUNT(*) as 'Number of Appointments'
+            query1 = """SELECT DAYNAME(appointment_date) as WeekDay, COUNT(*) as 'NumberAppointments'
             FROM Appointment
             GROUP BY DAYNAME(appointment_date)
             ORDER BY COUNT(*) DESC
             limit 1;"""
 
-            busiestday = execute_read_query(conn, query1)
+            busiestday = new_read(query1)
 
             busiestdayofweek = []
 
-            for day in busiestdayofweek:
-                 busiestday.append(day)
+            for day in busiestday:
+                 busiestdayofweek.append(day)
             return jsonify(busiestdayofweek)
 
 #Customers that most cancel appointments
