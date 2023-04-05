@@ -28,9 +28,42 @@ app.get('/employeehome', function(req, res) {
 });
 
 app.get('/customerhome', function(req, res) {
-    res.render('pages/customerindex.ejs')
+    console.log(5 + 10) 
+    // get customer's appointments' from api
+     axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
+     .then((response)=>{
+ 
+     var appointments = response.data;
+     var tagline = "Here is the data coming from my own API";
+     // render page of appointments
+     res.render('pages/customerindex.ejs', {
+         appointments: appointments,
+         tagline: tagline
+     });
+  });
 })
 
+app.get('/createappointment', (req, res) => {
+    
+    const employeesurl = 'http://127.0.0.1:5000/api/Employees';
+    const servicesurl = 'http://127.0.0.1:5000/api/Services';
+    
+    axios.get(employeesurl)
+     .then((response)=>{
+        var employees = response.data 
+
+        axios.get(servicesurl)
+        .then((response) =>{
+            var services = response.data    
+        
+            res.render('pages/newappointment', {
+                employees: employees,
+                services: services
+            })
+        });
+    });    
+});
+    
 app.get('/showreports', (req, res) => {
 
     const commonurl = 'http://127.0.0.1:5000/api/MostandLeastCommonService';
@@ -46,5 +79,6 @@ app.get('/showreports', (req, res) => {
     }));
 });
 
+  
 app.listen(port);
 console.log('listening for request on port' + port);
