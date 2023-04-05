@@ -251,7 +251,7 @@ def api_appointments():
 
 #Request to view all employees
 @app.route('/api/Employees', methods=['GET'])
-def api_appointments():
+def api_employees():
     #query for sql to see employees table:
     
     query = """SELECT * from Employee WHERE employee_status = 'ACTIVE';"""
