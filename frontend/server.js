@@ -28,7 +28,7 @@ app.get('/employeehome', function(req, res) {
 });
 
 app.get('/customerhome', function(req, res) {
-    console.log(5 + 10) 
+     
     // get customer's appointments' from api
      axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
      .then((response)=>{
