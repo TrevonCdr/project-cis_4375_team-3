@@ -310,10 +310,9 @@ def add_appointment():
     data = newcustidinfo[0]
     for values in data.values():
         newcustid = values
-
+    newappointment_status = 'SCHEDULED'
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
-    newappointment_status = request_data['appointment_status']
     newappointment_time = request_data['appointment_time'] 
     #Appointment Total added based on service_type:
     if 'Haircut' in request_data['service_type']:
