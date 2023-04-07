@@ -7,6 +7,7 @@ from SQL import create_connection
 from SQL import execute_query
 from SQL import execute_read_query
 from SQL import new_read
+import requests
 
 #setting up the application
 app = flask.Flask(__name__) #sets up the application
@@ -424,6 +425,23 @@ def api_profitability():
     return jsonify(mostprofitable,leastprofitable, mostprofitableweek, leastprofitableweek)
 
 
+@app.route('/auth')
+def auth(code):
+    code = code
+    token_url = 'https://cis4375.auth.us-east-1.amazoncognito.com/oauth2/token'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic N3F2b2Zua2ttZ2lxYTVpN2g2b2djZ2NuZzU6MW9iYTZkYTl2cmJtMW5vcm1nYnQzbWVzMzVycm1tZTNyOTg2djhqcG83MzNuOTBucnRzMA=='
+    }
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': '17qvofnkkmgiqa5i7h6ogcgcng5',
+        'code': '{}'.format(code),
+        'redirect_uri': 'http://localhost:8080/customerhome'
+    }
+    response = requests.post(token_url, headers=headers, data=data)
+    print(response)
+    return "done"
      
      
 
