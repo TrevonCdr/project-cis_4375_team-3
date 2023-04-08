@@ -328,7 +328,22 @@ def add_appointment():
     execute_query(conn, query_insert_appointment)
 
     return 'Add request successful!'
- 
+ #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
+@app.route('/api/update/appointmentstatus', methods = ['PUT'])
+def update_status():
+    request_data = request.get_json()
+    update_appointment_date = request_data['appointment_date']
+    update_appointment_time = request_data['appointment_time']
+    newappointmentstat = request_data['appointment_status']
+
+    #query to udate table data based on id given:
+
+    update_query = """
+    UPDATE Appointment
+    SET appointment_status = '%s'
+    WHERE appointment_date = '%s' and appointment_time = '%s'""" %(newappointmentstat,update_appointment_date, update_appointment_time)
+    execute_query(conn, update_query)
+    return "Update request successful!"
 
 @app.route('/api/AppointmentsCustomer', methods=['GET'])
 def api_appointmentscust():
