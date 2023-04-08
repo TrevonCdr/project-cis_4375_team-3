@@ -158,6 +158,21 @@ app.post('/add_appointment', function(req, res){
     })*/
 })
 
+// cancel page
+app.get('/cancelappointment', (req, res) => {
+    axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
+     .then((response)=>{
+     var appointments = response.data;
+     // render page of cancel appointments
+     res.render('pages/cancelappointment.ejs', {
+         appointments: appointments,
+     });
+  });
+
+});
+
+app.put
+
   
 app.listen(port);
 console.log('listening for request on port' + port);
