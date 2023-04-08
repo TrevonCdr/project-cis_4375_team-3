@@ -231,7 +231,7 @@ def api_numberofappointments():
 
 
 #Request to see all appointments:
-
+#localhost:5000/api/Appointments
 @app.route('/api/Appointments', methods=['GET'])
 def api_appointments():
     #query for sql to see appointment table:
@@ -487,8 +487,42 @@ def api_profitability():
 
     return jsonify(mostprofitable,leastprofitable, mostprofitableweek, leastprofitableweek)
 
+@app.route('/api/CancelAppointment', methods=['GET'])
+def api_appointmentscancel():
+    #query for sql to see appointment for cancel page table:
+   
+    query = """Select appointment_id, Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
+appointment_date, appointment_status From Appointment
+join Customer
+on Appointment.customer_id = Customer.customer_id
+WHERE appointment_status = 'SCHEDULED';
+"""
+ 
+    appointmentinfo = new_read(query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointmentdata = []
+ 
+    for appt in appointmentinfo:
+        appointmentdata.append(appt)
+   
+    return jsonify(appointmentdata)
+     
 
-     
-     
+@app.route('/api/update/appointmentstatuscancel', methods = ['PUT'])
+def update_cancel_status():
+    request_data = request.get_json()
+    update_appointment_id = request_data['appointment_id']
+    newappointmentstat = request_data['appointment_status']
+
+    #query to udate table data based on id given:
+
+    update_query = """
+    UPDATE Appointment
+    SET appointment_status = '%s'
+    WHERE appointment_id = '%s'""" %(newappointmentstat, update_appointment_id)
+    execute_query(conn, update_query)
+    return "Update request successful!"
 
 app.run()
