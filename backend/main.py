@@ -7,6 +7,8 @@ from SQL import create_connection
 from SQL import execute_query
 from SQL import execute_read_query
 from SQL import new_read
+from datetime import timedelta
+from datetime import date
 
 #setting up the application
 app = flask.Flask(__name__) #sets up the application
@@ -311,9 +313,10 @@ def add_appointment():
     for values in data.values():
         newcustid = values
     newappointment_status = 'SCHEDULED'
-    newappointment_date = request_data['appointment_date']
+    newappointment_date = request_data['appointment_date'] 
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
+
     #Appointment Total added based on service_type:
     if 'Haircut' in request_data['service_type']:
         newappointment_total = 25
@@ -325,9 +328,27 @@ def add_appointment():
     INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total, appointment_time) 
     values ('%s','%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total, newappointment_time)
 
-    execute_query(conn, query_insert_appointment)
+    #Code to not allow duplicate appointments:
+    querydate = "select appointment_date from Appointment"
+    querytime = "select appointment_time from Appointment"
+    dates = execute_read_query(conn, querydate)
+    olddates = []
 
-    return 'Add request successful!'
+    for date in dates:
+        olddates.append(date['appointment_date'].strftime("%Y/%m/%d"))
+    
+    times = execute_read_query(conn, querytime)
+    oldtimes = []
+
+    for time in times:
+        oldtimes.append(str(time['appointment_time']))
+
+    if (newappointment_date in olddates) and (newappointment_time in oldtimes):
+        return 'Date and time has been taken'
+    else:
+        execute_query(conn, query_insert_appointment)
+        return 'Add request successful!'
+    
  #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
 @app.route('/api/update/appointmentstatus', methods = ['PUT'])
 def update_status():
