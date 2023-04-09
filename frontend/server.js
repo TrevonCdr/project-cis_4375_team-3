@@ -133,18 +133,28 @@ app.post('/add_appointment', function(req, res){
     console.log(req.body)
     
     var date = req.body.date;
+    var time = req.body.time;
     var phoneNumber = req.body.phoneNumber;
-    var employeeid = req.body.employeeid
-    var serviceid = req.body.serviceid
-    var customerNote = req.body.customerNote
+    var employeeid = req.body.employeeid;
+
+    // split service id and price info
+    var serviceinfo = req.body.serviceinfo.split(" ");
+    var serviceid = serviceinfo[0];
+    var servicePrice = serviceinfo[1];
+
+    var customerNote = req.body.comments;
+    
     
     var appointmentinfo = {
     'appointment_date': date,
+    'appointment_time': time,
     'phone_number': phoneNumber,
     'employee_id' : employeeid,
     'service_id' : serviceid,
+    'price': servicePrice,
     'customer_note' : customerNote
     }
+    console.log(appointmentinfo)
     
     /* send to backend api
     axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
