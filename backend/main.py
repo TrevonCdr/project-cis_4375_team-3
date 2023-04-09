@@ -307,12 +307,7 @@ def add_appointment():
     newappointment_date = request_data['appointment_date'] 
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
-
-    #Appointment Total added based on service_type:
-    # if 'Haircut' in request_data['service_type']:
-    #     newappointment_total = 25
-    # else:
-    #      newappointment_total = 40
+    dateformatted = newappointment_date + ' ' + newappointment_time
 
     newappointment_total = request_data['appointment_total']
 
@@ -322,49 +317,26 @@ def add_appointment():
     values ('%s','%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total, newappointment_time)
 
     #Code to not allow duplicate appointments:
-    querydate = "select appointment_date from Appointment"
-    querytime = "select appointment_time from Appointment"
+
+    querydate = "select appointment_date,appointment_time from Appointment"
     dates = execute_read_query(conn, querydate)
-    olddates = []
+    alldates = []
 
-    for date in dates:
-        olddates.append(date['appointment_date'].strftime("%Y/%m/%d"))
-    
-    times = execute_read_query(conn, querytime)
-    oldtimes = []
+    for d in dates:
+        alldates.append(d['appointment_date'].strftime("%Y/%m/%d"))
+        alldates.append(str(d['appointment_time']))
 
-    for time in times:
-        oldtimes.append(str(time['appointment_time']))
+    #From stackoverflow, in order to join dates and times together
+    # https://stackoverflow.com/questions/24443995/list-comprehension-joining-every-two-elements-together-in-a-list:
+    datestimes = []
+    for i in range(0, len(alldates), 2):
+        datestimes.append(alldates[i] + ' ' +alldates[i+1])
 
-    if newappointment_date not in olddates and newappointment_time not in oldtimes:
+    if dateformatted in datestimes:
+        return 'Appointment date and time taken'
+    else:
         execute_query(conn, query_insert_appointment)
-        return 'Add request successful!'
-    else:    
-        return 'Date and time has been taken'
-    
-#Code to not allow duplicate appointments:
-querydate = "select appointment_date from Appointment"
-querytime = "select appointment_time from Appointment"
-dates = execute_read_query(conn, querydate)
-olddates = []
-
-for date in dates:
-    olddates.append(date['appointment_date'].strftime("%Y/%m/%d"))
-    
-times = execute_read_query(conn, querytime)
-oldtimes = []
-
-for time in times:
-    oldtimes.append(str(time['appointment_time']))
-
-newappointment_date = "2023/04/07"
-newappointment_time = "9:00:00"
-    
-if newappointment_date not in olddates:
-    if newappointment_time not in oldtimes:
-        print('Add request successful!')
-else:    
-    print('Date and time has been taken')
+        return 'Appointment Added'
     
  #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
 @app.route('/api/update/appointmentstatus', methods = ['PUT'])
