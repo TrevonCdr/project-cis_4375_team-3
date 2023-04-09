@@ -151,7 +151,7 @@ app.post('/add_appointment', function(req, res){
     'phone_number': phoneNumber,
     'employee_id' : employeeid,
     'service_id' : serviceid,
-    'price': servicePrice,
+    'appointment_total': servicePrice,
     'customer_note' : customerNote
     }
     console.log(appointmentinfo)
