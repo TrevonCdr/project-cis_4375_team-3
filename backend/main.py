@@ -293,16 +293,7 @@ def api_services():
 def add_appointment():
     request_data = request.get_json()
 
-    #Getting employee_id based on name given:
-
-    if 'Lennin Repizo' in request_data['employee_name']:
-        newemployee_id = 1
-    elif 'Jayme Scard' in request_data['employee_name']:
-        newemployee_id = 2
-    elif 'Valeriano Avila' in request_data['employee_name']:
-        newemployee_id = 3
-    elif 'Mariana Alvarez' in request_data['employee_name']:
-        newemployee_id = 4
+    newemployee_id = request_data['employee_id']
     
     #Getting customer_id based on phone number:
 
@@ -318,10 +309,12 @@ def add_appointment():
     newappointment_time = request_data['appointment_time'] 
 
     #Appointment Total added based on service_type:
-    if 'Haircut' in request_data['service_type']:
-        newappointment_total = 25
-    else:
-         newappointment_total = 40
+    # if 'Haircut' in request_data['service_type']:
+    #     newappointment_total = 25
+    # else:
+    #      newappointment_total = 40
+
+    newappointment_total = request_data['appointment_total']
 
     #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
@@ -343,11 +336,35 @@ def add_appointment():
     for time in times:
         oldtimes.append(str(time['appointment_time']))
 
-    if (newappointment_date in olddates) and (newappointment_time in oldtimes):
-        return 'Date and time has been taken'
-    else:
+    if newappointment_date not in olddates and newappointment_time not in oldtimes:
         execute_query(conn, query_insert_appointment)
         return 'Add request successful!'
+    else:    
+        return 'Date and time has been taken'
+    
+#Code to not allow duplicate appointments:
+querydate = "select appointment_date from Appointment"
+querytime = "select appointment_time from Appointment"
+dates = execute_read_query(conn, querydate)
+olddates = []
+
+for date in dates:
+    olddates.append(date['appointment_date'].strftime("%Y/%m/%d"))
+    
+times = execute_read_query(conn, querytime)
+oldtimes = []
+
+for time in times:
+    oldtimes.append(str(time['appointment_time']))
+
+newappointment_date = "2023/04/07"
+newappointment_time = "9:00:00"
+    
+if newappointment_date not in olddates:
+    if newappointment_time not in oldtimes:
+        print('Add request successful!')
+else:    
+    print('Date and time has been taken')
     
  #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
 @app.route('/api/update/appointmentstatus', methods = ['PUT'])
