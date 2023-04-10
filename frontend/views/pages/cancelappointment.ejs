@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <%- include('partials/head'); %>
+    </head>
+    <body>
+        <header>
+            <%- include('partials/employeenav'); %>
+            <style>
+                h1 {
+                    padding-top: 30px;
+                    padding-bottom: 30px;
+                    padding-left: 100px;
+                }
+            </style>
+        </header>
+        <h1 class="cover-heading">Choose an Appointment to cancel</h1>
+        <div class="container text-dark">
+            <table class="table table-striped table-bordered w-auto">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Appointment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (var i = 0; i < appointments.length; i++) { %>
+                        <tr>
+                            <td><%=appointments[i].Name%></td>
+                            <td><%=appointments[i].appointment_date%></td>
+                            <td>
+                                <% if (appointments[i].appointment_status === 'SCHEDULED') { %>
+                                    <form method="POST" action="http://localhost:5000/api/appointments/<%= appointments[i].appointment_id %>/cancel">
+                                        <button class="btn btn-primary" type="submit">CANCEL</button>
+                                    </form>
+                                <% } else { %>
+                                    <button disabled>Cancelled</button>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <%}%>
+                </tbody>
+            </table>
+
+
+        </div> 
+        
+        </div> 
+
+        <script>
+            
+        </script>
+    </body>
+</html>

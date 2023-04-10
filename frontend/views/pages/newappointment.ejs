@@ -1,0 +1,56 @@
+<html>
+    <body>
+        <header>
+            <%- include('partials/customernav'); %>
+        </header>
+        <h1 class="cover-heading">New Appointment</h1>
+        <div class = "container">
+          <form action="/add_appointment" method="post" enctype='application/x-www-form-urlencoded'>
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input type="date" class="form-control" id="date" name="date">
+              <br></br>
+            </div>
+            <div class="form-group">
+              <label for="time">Time</label>
+              <input type="time" class="form-control" id="time" name="time">
+              <br></br>
+            </div>
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number</label>
+              <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+              <br></br>
+            </div>
+            <div class="form-group">
+              <h3>Available Employees</h3>
+              <%employees.forEach(function(entry) {%>
+              <input type="radio" class="form-check-input" id="<%=entry.employee_id%>" name="employeeid" value="<%=entry.employee_id%>">
+              <label for="<%=entry.employee_id%>"><%=entry.employee_first_name%> <%=entry.employee_last_name%></label>
+              <br></br>
+              <%});%>
+              <br></br>  
+            </div>
+            <div class="form-group">
+              <h3>Available Services</h3>
+              <%services.forEach(function(entry) {%>
+              <input type="radio" class="form-check-input" id="<%=entry.service_id%>" name="serviceinfo" value="<%=entry.service_id%> <%=entry.price%>" >
+              <label for="<%=entry.employee_id%>"><%=entry.service_type%> - $<%=entry.price%></label>
+              <br></br>
+              <%});%>
+              <br></br>  
+            </div>
+            <div class="form-group">
+                <textarea id="customerNote" name="comments" rows="4" cols="50" placeholder="Please enter any additional info"></textarea>
+                <br></br>
+            </div>
+            <input class="btn btn-lg btn-primary btn-block" type="submit" id="login-button">
+          </form> 
+    </body>
+</html>
+<style>
+  h1 {
+      padding-top: 30px;
+      padding-bottom: 30px;
+      padding-left: 100px;
+  }
+</style>
