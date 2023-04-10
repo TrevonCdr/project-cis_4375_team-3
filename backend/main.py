@@ -1,5 +1,5 @@
 import flask
-from flask import jsonify
+from flask import jsonify, redirect
 from flask import request, make_response
 import mysql.connector
 from mysql.connector import Error
@@ -539,5 +539,14 @@ def update_cancel_status():
     WHERE appointment_id = '%s'""" %(newappointmentstat, update_appointment_id)
     execute_query(conn, update_query)
     return "Update request successful!"
+
+@app.route('/api/appointments/<int:id>/cancel', methods =['POST'])
+def cancel_appointment(id):
+    update_query = "UPDATE Appointment SET appointment_status='CANCELED' WHERE appointment_id=%s"
+    cursor = conn.cursor()
+    cursor.execute(update_query, (id,))
+    conn.commit()
+
+    return redirect('http://localhost:8080/cancelsuccess')
 
 app.run()

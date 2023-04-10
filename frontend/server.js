@@ -181,6 +181,11 @@ app.get('/cancelappointment', (req, res) => {
 
 });
 
+app.get('/cancelsuccess', (req, res) => {
+    res.render('pages/cancelsuccess.ejs')
+})
+
+
 app.put
 
   
