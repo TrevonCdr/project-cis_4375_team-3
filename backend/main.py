@@ -278,54 +278,23 @@ def add_appointment():
 
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
-    newappointment_time = request_data['appointment_time'] 
-    dateformatted = newappointment_date + ' ' + newappointment_time
+    newappointment_status = request_data['appointment_status']
 
-    newappointment_total = request_data['appointment_total']
+    #Appointment Total added based on service_type:
+    if 'Haircut' in request_data['service_type']:
+        newappointment_total = 25
+    else:
+         newappointment_total = 40
 
     #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
-    INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total, appointment_time) 
-    values ('%s','%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total, newappointment_time)
+    INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total) 
+    values ('%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total)
 
-    #Code to not allow duplicate appointments:
+    execute_query(conn, query_insert_appointment)
 
-    querydate = "select appointment_date,appointment_time from Appointment"
-    dates = execute_read_query(conn, querydate)
-    alldates = []
-
-    for d in dates:
-        alldates.append(d['appointment_date'].strftime("%Y/%m/%d"))
-        alldates.append(str(d['appointment_time']))
-
-    #From stackoverflow, in order to join dates and times together
-    # https://stackoverflow.com/questions/24443995/list-comprehension-joining-every-two-elements-together-in-a-list:
-    datestimes = []
-    for i in range(0, len(alldates), 2):
-        datestimes.append(alldates[i] + ' ' +alldates[i+1])
-
-    if dateformatted in datestimes:
-        return 'Appointment date and time taken'
-    else:
-        execute_query(conn, query_insert_appointment)
-        return 'Appointment Added'
-    
- #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
-@app.route('/api/update/appointmentstatus', methods = ['PUT'])
-def update_status():
-    request_data = request.get_json()
-    update_appointment_date = request_data['appointment_date']
-    update_appointment_time = request_data['appointment_time']
-    newappointmentstat = request_data['appointment_status']
-
-    #query to udate table data based on id given:
-
-    update_query = """
-    UPDATE Appointment
-    SET appointment_status = '%s'
-    WHERE appointment_date = '%s' and appointment_time = '%s'""" %(newappointmentstat,update_appointment_date, update_appointment_time)
-    execute_query(conn, update_query)
-    return "Update request successful!"
+    return 'Add request successful!'
+ 
 
 @app.route('/api/AppointmentsCustomer', methods=['GET'])
 def api_appointmentscust():
