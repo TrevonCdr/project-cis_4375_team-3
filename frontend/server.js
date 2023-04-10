@@ -156,7 +156,7 @@ app.post('/add_appointment', function(req, res){
     }
     console.log(appointmentinfo)
     
-    /* send to backend api
+    //send to backend api
     axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
     .then(function (response) {
         if ((response.data.result) === 'good') {
@@ -165,7 +165,7 @@ app.post('/add_appointment', function(req, res){
         else {
             console.log(response.data)
         }
-    })*/
+    })
 })
 
 // cancel page
