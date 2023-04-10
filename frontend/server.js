@@ -19,7 +19,6 @@ app.get('/', (req, res) => {
 })
 
 app.get('/employeehome', function(req, res) {
-
     
     // get customer's appointments' from api
     axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
@@ -36,9 +35,8 @@ app.get('/employeehome', function(req, res) {
 });
 
 app.get('/customerhome', function(req, res) {
-    const code = req.query.code;
-    console.log(code)
-     //get customer's appointments' from api
+
+     // get customer's appointments' from api
      axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
      .then((response)=>{
  
@@ -130,11 +128,6 @@ app.get('/showreports', (req, res) => {
     }));
 });
 
-app.get('/logout', (req, res)=>{
-    res.render('pages/logout.ejs')
-});
-
-
 // add appointment info to database
 app.post('/add_appointment', function(req, res){
     console.log(req.body)
@@ -195,6 +188,6 @@ app.get('/cancelsuccess', (req, res) => {
 
 app.put
 
-
+  
 app.listen(port);
 console.log('listening for request on port' + port);
