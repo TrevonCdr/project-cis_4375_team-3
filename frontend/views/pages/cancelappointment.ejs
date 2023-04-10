@@ -23,26 +23,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (var i = 0; i < appointments.length; i++) { %>
+                    <%appointments.forEach(function(entry) {%>
                         <tr>
-                            <td><%=appointments[i].appointment_id%></td>
-                            <td><%=appointments[i].Name%></td>
-                            <td><%=appointments[i].appointment_date%></td>
-                            <td>
-                                <% if (appointments[i].appointment_status === 'SCHEDULED') { %>
-                                    <form method="POST" action="http://localhost:5000/api/appointments/<%= appointments[i].appointment_id %>/cancel">
-                                        <button class="btn btn-primary" type="submit">CANCEL</button>
-                                    </form>
-                                <% } else { %>
-                                    <button disabled>Cancelled</button>
-                                <% } %>
-                            </td>
+                            <td><%=entry.Name%></td>
+                            <td><%=entry.appointment_date%></td>
+                            <td><button class="btn btn-primary">Cancel</button></td>
                         </tr>
-                    <%}%>
+                    <%});%>
                 </tbody>
             </table>
-
-
         </div> 
         
         </div> 

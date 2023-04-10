@@ -181,9 +181,7 @@ app.get('/cancelappointment', (req, res) => {
 
 });
 
-app.get('/cancelsucess', (req, res) => {
-    res.render('pages/cancelsucess.ejs')
-})
+app.put
 
   
 app.listen(port);
