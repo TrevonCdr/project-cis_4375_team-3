@@ -323,7 +323,7 @@ def add_appointment():
 
     #Code to not allow duplicate appointments:
 
-    querydate = "select appointment_date,appointment_time from Appointment"
+    querydate = "select appointment_date,appointment_time from Appointment WHERE appointment_status = 'SCHEDULED'"
     dates = execute_read_query(conn, querydate)
     alldates = []
 
