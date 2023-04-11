@@ -304,11 +304,12 @@ def add_appointment():
     for values in data.values():
         newcustid = values
     newappointment_status = 'SCHEDULED'
-    newappointment_date = request_data['appointment_date'] 
+    newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
 
     dateformatted = newappointment_date + ' ' + newappointment_time
+    
 
     #Appointment Total added based on service_type:
     newappointment_total = request_data['appointment_total']
@@ -328,13 +329,13 @@ def add_appointment():
     for d in dates:
         alldates.append(d['appointment_date'].strftime("%Y/%m/%d"))
         alldates.append(str(d['appointment_time']))
-
+    
     #From stackoverflow, in order to join dates and times together
     # https://stackoverflow.com/questions/24443995/list-comprehension-joining-every-two-elements-together-in-a-list:
     datestimes = []
     for i in range(0, len(alldates), 2):
         datestimes.append(alldates[i] + ' ' +alldates[i+1])
-
+    
     if dateformatted in datestimes:
         return 'Appointment date and time taken'
     else:
