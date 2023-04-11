@@ -7,7 +7,6 @@ from SQL import create_connection
 from SQL import execute_query
 from SQL import execute_read_query
 from SQL import new_read
-import requests
 from datetime import timedelta
 from datetime import date
 
