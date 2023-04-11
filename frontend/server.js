@@ -134,17 +134,33 @@ app.post('/add_appointment', function(req, res){
     var olddate = req.body.date;
     var date = olddate.replace('-','/')
     date = date.replace('-','/')
-    console.log(date)
+    
     
     var time = req.body.time;
     var phoneNumber = req.body.phoneNumber;
     var employeeid = req.body.employeeid;
 
     // split service id and price info
-    var serviceinfo = req.body.serviceinfo.split(" ");
-    var serviceid = serviceinfo[0];
-    var servicePrice = serviceinfo[1];
-
+    var serviceinfo = req.body.serviceinfo;
+    
+    if (typeof serviceinfo == 'string') {
+            serviceinfo = serviceinfo.split(" ");
+            var serviceid = [];
+            serviceid.push(serviceinfo[0]);
+            var servicePrice = serviceinfo[1];
+    }   else {
+        var serviceid = [];
+        var servicePrice = 0;
+        for (let x in serviceinfo) {
+            
+            oneservice = serviceinfo[x].split(" ");
+            var service = oneservice[0];
+            var price = oneservice[1];
+            serviceid.push(service);
+            servicePrice += parseInt(price);
+        }
+        servicePrice = String(servicePrice)
+    };
     var customerNote = req.body.comments;
     
     

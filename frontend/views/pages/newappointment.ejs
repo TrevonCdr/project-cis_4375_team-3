@@ -33,7 +33,7 @@
             <div class="form-group">
               <h3>Available Services</h3>
               <%services.forEach(function(entry) {%>
-              <input type="radio" class="form-check-input" id="<%=entry.service_id%>" name="serviceinfo" value="<%=entry.service_id%> <%=entry.price%>" >
+              <input type="checkbox" class="form-check-input" id="<%=entry.service_id%>" name="serviceinfo" value="<%=entry.service_id%> <%=entry.price%>" >
               <label for="<%=entry.employee_id%>"><%=entry.service_type%> - $<%=entry.price%></label>
               <br></br>
               <%});%>

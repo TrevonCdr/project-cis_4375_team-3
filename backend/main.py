@@ -349,12 +349,14 @@ def add_appointment():
         appointment_id = appointment_id[0]['appointment_id']
 
         #get service_id
-        service_id = request_data['service_id']
+        services = request_data['service_id']
         
-        #insert into appointmentservice
-        query_insert_appointment_services = """INSERT INTO AppointmentService VALUES ('%s', '%s')"""%(service_id, appointment_id)
-        execute_query(conn, query_insert_appointment_services)
-        
+        for service_id in services:
+            
+            #insert into appointmentservice
+            query_insert_appointment_services = """INSERT INTO AppointmentService VALUES ('%s', '%s')"""%(service_id, appointment_id)
+            execute_query(conn, query_insert_appointment_services)
+            
         return 'Appointment Added'
     
 
