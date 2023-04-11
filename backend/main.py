@@ -309,7 +309,7 @@ def add_appointment():
     newappointment_time = request_data['appointment_time'] 
 
 
-    dateformatted = newappointment_date + ' ' + newappointment_time
+    dateformatted = newappointment_date + ' ' + newappointment_time + ' ' + newemployee_id
     
     #Appointment Total added based on service_type:
     newappointment_total = request_data['appointment_total']
