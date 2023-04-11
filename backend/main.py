@@ -308,7 +308,7 @@ def add_appointment():
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
 
-    dateformatted = newappointment_date + ' ' + newappointment_time
+    dateformatted = newappointment_date + ' ' + newappointment_time + ' ' + str(newemployee_id)
 
     #Appointment Total added based on service_type:
     newappointment_total = request_data['appointment_total'] 
@@ -320,25 +320,28 @@ def add_appointment():
 
     #Code to not allow duplicate appointments:
 
-    querydate = "select appointment_date,appointment_time from Appointment WHERE appointment_status = 'SCHEDULED'"
+    querydate = "select appointment_date,appointment_time,employee_id from Appointment WHERE appointment_status = 'SCHEDULED'"
     dates = execute_read_query(conn, querydate)
     alldates = []
 
     for d in dates:
         alldates.append(d['appointment_date'].strftime("%Y/%m/%d"))
         alldates.append(str(d['appointment_time']))
+        alldates.append(d['employee_id'])
 
     #From stackoverflow, in order to join dates and times together
     # https://stackoverflow.com/questions/24443995/list-comprehension-joining-every-two-elements-together-in-a-list:
-    datestimes = []
-    for i in range(0, len(alldates), 2):
-        datestimes.append(alldates[i] + ' ' +alldates[i+1])
+    datestimesempid = []
+    for i in range(0, len(alldates), 3):
+        datestimesempid.append(alldates[i] + ' ' +alldates[i+1]+' '+str(alldates[i+2]))
 
-    if dateformatted in datestimes:
+    if dateformatted in datestimesempid:
         return 'Appointment date and time taken'
     else:
         execute_query(conn, query_insert_appointment)
         return 'Appointment Added'
+    
+
     
  #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
 @app.route('/api/update/appointmentstatus', methods = ['PUT'])
