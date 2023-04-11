@@ -89,8 +89,8 @@ LIMIT 1;"""
 @app.route('/api/Earnings', methods=['GET'])
 def api_Earnings():
         # Earnings Per Week
-        query1 = """SELECT STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') AS 'WeekStart', 
-       STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') AS 'WeekEnd',
+        query1 = """SELECT cast(STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') as char) AS 'WeekStart', 
+       cast(STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') as char) AS 'WeekEnd',
         SUM(appointment_total) AS Earnings
         FROM Appointment
         WHERE appointment_status <> 'CANCELED'
@@ -105,7 +105,7 @@ def api_Earnings():
         order by year(appointment_date),month(appointment_date);"""
       
         #Earnings for the current date
-        query3 = """SELECT curdate() as "Today", sum(appointment_total) "Earnings"
+        query3 = """SELECT DATE_FORMAT(curdate(), '%Y-%m-%d') as "Today", sum(appointment_total) "Earnings"
         from Appointment
         where appointment_date = curdate()
         AND appointment_status <> 'CANCELED';"""
