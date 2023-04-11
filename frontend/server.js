@@ -132,7 +132,11 @@ app.get('/showreports', (req, res) => {
 app.post('/add_appointment', function(req, res){
     console.log(req.body)
     
-    var date = req.body.date;
+    var olddate = req.body.date;
+    var date = olddate.replace('-','/')
+    date = date.replace('-','/')
+    console.log(date)
+    
     var time = req.body.time;
     var phoneNumber = req.body.phoneNumber;
     var employeeid = req.body.employeeid;
@@ -156,7 +160,7 @@ app.post('/add_appointment', function(req, res){
     }
     console.log(appointmentinfo)
     
-    /* send to backend api
+    //send to backend api
     axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
     .then(function (response) {
         if ((response.data.result) === 'good') {
@@ -165,9 +169,8 @@ app.post('/add_appointment', function(req, res){
         else {
             console.log(response.data)
         }
-    })*/
+    })
 })
-
 // cancel page
 app.get('/cancelappointment', (req, res) => {
     axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)

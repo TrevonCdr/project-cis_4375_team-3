@@ -304,19 +304,22 @@ def add_appointment():
     for values in data.values():
         newcustid = values
     newappointment_status = 'SCHEDULED'
-    newappointment_date = request_data['appointment_date'] 
+    newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
 
-    dateformatted = newappointment_date + ' ' + newappointment_time + ' ' + str(newemployee_id)
 
+    dateformatted = newappointment_date + ' ' + newappointment_time
+    
     #Appointment Total added based on service_type:
-    newappointment_total = request_data['appointment_total'] 
+    newappointment_total = request_data['appointment_total']
+
 
     #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
     INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total, appointment_time) 
     values ('%s','%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total, newappointment_time)
+
 
     #Code to not allow duplicate appointments:
 
@@ -339,6 +342,19 @@ def add_appointment():
         return 'Appointment date and time taken'
     else:
         execute_query(conn, query_insert_appointment)
+        
+        #get appointment ID of latest record
+        query_get_appointment_ID = """SELECT appointment_id FROM Appointment ORDER BY appointment_id DESC LIMIT 1;"""
+        appointment_id = execute_read_query(conn, query_get_appointment_ID)
+        appointment_id = appointment_id[0]['appointment_id']
+
+        #get service_id
+        service_id = request_data['service_id']
+        
+        #insert into appointmentservice
+        query_insert_appointment_services = """INSERT INTO AppointmentService VALUES ('%s', '%s')"""%(service_id, appointment_id)
+        execute_query(conn, query_insert_appointment_services)
+        
         return 'Appointment Added'
     
 
