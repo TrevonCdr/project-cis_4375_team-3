@@ -130,7 +130,6 @@ app.get('/showreports', (req, res) => {
 
 // add appointment info to database
 app.post('/add_appointment', function(req, res){
-    console.log(req.body)
     
     var olddate = req.body.date;
     var date = olddate.replace('-','/')
