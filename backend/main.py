@@ -365,7 +365,9 @@ def api_appointmentscust():
 appointment_date, appointment_status, email,
 phone_number From Appointment
 join Customer
-on Appointment.customer_id = Customer.customer_id;
+on Appointment.customer_id = Customer.customer_id
+where appointment_date >= CURDATE()
+order by appointment_date asc;
 """
  
     appointmentinfo = execute_read_query(conn, query)
