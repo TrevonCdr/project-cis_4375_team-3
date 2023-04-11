@@ -20,6 +20,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Appointment Date</th>
+                        <th>Appointment Time</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,6 +28,7 @@
                         <tr>
                             <td><%=appointments[i].Name%></td>
                             <td><%=appointments[i].appointment_date%></td>
+                            <td><%=appointments[i].appointment_time%></td>
                             <td>
                                 <% if (appointments[i].appointment_status === 'SCHEDULED') { %>
                                     <form method="POST" action="http://localhost:5000/api/appointments/<%= appointments[i].appointment_id %>/cancel">

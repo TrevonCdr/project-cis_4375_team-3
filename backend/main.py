@@ -504,7 +504,7 @@ def api_appointmentscancel():
     #query for sql to see appointment for cancel page table:
    
     query = """Select appointment_id, Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
-appointment_date, appointment_status From Appointment
+appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status From Appointment
 join Customer
 on Appointment.customer_id = Customer.customer_id
 WHERE appointment_status = 'SCHEDULED';
