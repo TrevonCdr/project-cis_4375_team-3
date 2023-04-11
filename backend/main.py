@@ -311,10 +311,7 @@ def add_appointment():
     dateformatted = newappointment_date + ' ' + newappointment_time
 
     #Appointment Total added based on service_type:
-    if 'Haircut' in request_data['service_type']:
-        newappointment_total = 25
-    else:
-         newappointment_total = 40
+    newappointment_total = request_data['appointment_total'] 
 
     #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
