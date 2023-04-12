@@ -34,6 +34,45 @@ app.get('/employeehome', function(req, res) {
     });       
 });
 
+app.get('/verify', (req, res) => {
+    var code = req.query.code;
+    console.log(code);
+    const result = getToken(code);
+    console.log(result);
+    res.redirect('/customerhome');
+})
+
+
+app.get('/tokens', async (req, res) => {
+    const authorizationCode = req.query.code;
+    const url = 'https://cis4375.auth.us-east-1.amazoncognito.com/oauth2/token';
+  
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic N2JpbTkyMmZndDJjcmpuZTBmbzFkaWJ2dW06MWpiMDc3dWI2N25xcDVvdDNzOHFyc2RhN3ZkYnA3Z3Z1OWpvYTJzaDRuYmM2NzhndTBmNA=='
+    };
+  
+    const data = {
+      'grant_type': 'authorization_code',
+      'client_id': '7bim922fgt2crjne0fo1dibvum',
+      'code': authorizationCode,
+      'redirect_uri': 'http://localhost:8080/customerhome'
+    };
+  
+    try {
+      const response = await axios.post(url, data, { headers });
+      const responseData = JSON.stringify(response.data)
+      res.redirect('/customerhome?data=${responseData}');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('An error occurred');
+      res.redirect('/customerhome');
+    }
+  });
+
+
+
+
 app.get('/customerhome', function(req, res) {
 
      // get customer's appointments' from api
@@ -206,6 +245,10 @@ app.get('/createsuccess', (req, res) => {
 
 app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')
+})
+
+app.get('/logout', (req, res)=>{
+    res.render('pages/logout.ejs')
 })
 
 
