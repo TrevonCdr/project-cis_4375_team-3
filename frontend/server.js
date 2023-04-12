@@ -56,6 +56,18 @@ app.get('/createappointment', (req, res) => {
     const employeesurl = 'http://127.0.0.1:5000/api/Employees';
     const servicesurl = 'http://127.0.0.1:5000/api/Services';
     
+    const date = new Date();
+    var year = date.toLocaleString("default", { year: "numeric" });
+    var month = date.toLocaleString("default", { month: "2-digit" });
+    var day = date.toLocaleString("default", { day: "2-digit" });
+    var currDate = year + "-" + month + "-" + day;
+
+    var nextDate = new Date(date.setMonth(date.getMonth() + 2));
+    var year = nextDate.toLocaleString("default", { year: "numeric" });
+    var month = nextDate.toLocaleString("default", { month: "2-digit" });
+    var day = nextDate.toLocaleString("default", { day: "2-digit" });
+    var maxDate = year + '-' + month + '-' + day;
+    
     axios.get(employeesurl)
      .then((response)=>{
         var employees = response.data 
@@ -66,7 +78,9 @@ app.get('/createappointment', (req, res) => {
         
             res.render('pages/newappointment', {
                 employees: employees,
-                services: services
+                services: services,
+                currDate: currDate,
+                maxDate: maxDate
             })
         });
     });    
@@ -137,6 +151,8 @@ app.post('/add_appointment', function(req, res){
     
     
     var time = req.body.time;
+    time = time + ':00'
+    
     var phoneNumber = req.body.phoneNumber;
     var employeeid = req.body.employeeid;
 
