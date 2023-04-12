@@ -89,8 +89,8 @@ LIMIT 1;"""
 @app.route('/api/Earnings', methods=['GET'])
 def api_Earnings():
         # Earnings Per Week
-        query1 = """SELECT STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') AS 'WeekStart', 
-       STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') AS 'WeekEnd',
+        query1 = """SELECT cast(STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Sunday'), '%X%V %W') as char) AS 'WeekStart', 
+       cast(STR_TO_DATE(CONCAT(YEARWEEK(appointment_date, 0), ' ', 'Saturday'), '%X%V %W') as char) AS 'WeekEnd',
         SUM(appointment_total) AS Earnings
         FROM Appointment
         WHERE appointment_status <> 'CANCELED'
@@ -105,7 +105,7 @@ def api_Earnings():
         order by year(appointment_date),month(appointment_date);"""
       
         #Earnings for the current date
-        query3 = """SELECT curdate() as "Today", sum(appointment_total) "Earnings"
+        query3 = """SELECT DATE_FORMAT(curdate(), '%Y-%m-%d') as "Today", sum(appointment_total) "Earnings"
         from Appointment
         where appointment_date = curdate()
         AND appointment_status <> 'CANCELED';"""
@@ -304,41 +304,62 @@ def add_appointment():
     for values in data.values():
         newcustid = values
     newappointment_status = 'SCHEDULED'
-    newappointment_date = request_data['appointment_date'] 
+    newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
 
-    dateformatted = newappointment_date + ' ' + newappointment_time
 
+    dateformatted = newappointment_date + ' ' + newappointment_time + ' ' + newemployee_id
+    
     #Appointment Total added based on service_type:
-    newappointment_total = request_data['appointment_total'] 
+    newappointment_total = request_data['appointment_total']
+
 
     #Query for inserting to appointment table:
     query_insert_appointment = """INSERT
     INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total, appointment_time) 
     values ('%s','%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total, newappointment_time)
 
+
     #Code to not allow duplicate appointments:
 
-    querydate = "select appointment_date,appointment_time from Appointment WHERE appointment_status = 'SCHEDULED'"
+    querydate = "select appointment_date,appointment_time,employee_id from Appointment WHERE appointment_status = 'SCHEDULED'"
     dates = execute_read_query(conn, querydate)
     alldates = []
 
     for d in dates:
         alldates.append(d['appointment_date'].strftime("%Y/%m/%d"))
         alldates.append(str(d['appointment_time']))
+        alldates.append(d['employee_id'])
 
     #From stackoverflow, in order to join dates and times together
     # https://stackoverflow.com/questions/24443995/list-comprehension-joining-every-two-elements-together-in-a-list:
-    datestimes = []
-    for i in range(0, len(alldates), 2):
-        datestimes.append(alldates[i] + ' ' +alldates[i+1])
+    datestimesempid = []
+    for i in range(0, len(alldates), 3):
+        datestimesempid.append(alldates[i] + ' ' +alldates[i+1]+' '+str(alldates[i+2]))
 
-    if dateformatted in datestimes:
+    if dateformatted in datestimesempid:
         return 'Appointment date and time taken'
     else:
         execute_query(conn, query_insert_appointment)
-        return 'Appointment Added'
+        
+        #get appointment ID of latest record
+        query_get_appointment_ID = """SELECT appointment_id FROM Appointment ORDER BY appointment_id DESC LIMIT 1;"""
+        appointment_id = execute_read_query(conn, query_get_appointment_ID)
+        appointment_id = appointment_id[0]['appointment_id']
+
+        #get service_id
+        services = request_data['service_id']
+        
+        for service_id in services:
+            
+            #insert into appointmentservice
+            query_insert_appointment_services = """INSERT INTO AppointmentService VALUES ('%s', '%s')"""%(service_id, appointment_id)
+            execute_query(conn, query_insert_appointment_services)
+            
+        return 'Appointment added successfully'
+    
+
     
  #update appointment status: http://127.0.0.1:5000/api/update/appointmentstatus
 @app.route('/api/update/appointmentstatus', methods = ['PUT'])

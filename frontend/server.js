@@ -132,18 +132,37 @@ app.get('/showreports', (req, res) => {
 
 // add appointment info to database
 app.post('/add_appointment', function(req, res){
-    console.log(req.body)
     
-    var date = req.body.date;
+    var olddate = req.body.date;
+    var date = olddate.replace('-','/')
+    date = date.replace('-','/')
+    
+    
     var time = req.body.time;
     var phoneNumber = req.body.phoneNumber;
     var employeeid = req.body.employeeid;
 
     // split service id and price info
-    var serviceinfo = req.body.serviceinfo.split(" ");
-    var serviceid = serviceinfo[0];
-    var servicePrice = serviceinfo[1];
-
+    var serviceinfo = req.body.serviceinfo;
+    
+    if (typeof serviceinfo == 'string') {
+            serviceinfo = serviceinfo.split(" ");
+            var serviceid = [];
+            serviceid.push(serviceinfo[0]);
+            var servicePrice = serviceinfo[1];
+    }   else {
+        var serviceid = [];
+        var servicePrice = 0;
+        for (let x in serviceinfo) {
+            
+            oneservice = serviceinfo[x].split(" ");
+            var service = oneservice[0];
+            var price = oneservice[1];
+            serviceid.push(service);
+            servicePrice += parseInt(price);
+        }
+        servicePrice = String(servicePrice)
+    };
     var customerNote = req.body.comments;
     
     
@@ -158,18 +177,17 @@ app.post('/add_appointment', function(req, res){
     }
     console.log(appointmentinfo)
     
-    /* send to backend api
+    //send to backend api
     axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
     .then(function (response) {
-        if ((response.data.result) === 'good') {
-            res.render('pages/customerindex.ejs')
+        if ((response.data) === 'Appointment added successfully') {
+            res.render('pages/createsuccess.ejs')
         }
         else {
             console.log(response.data)
         }
-    })*/
+    })
 })
-
 // cancel page
 app.get('/cancelappointment', (req, res) => {
     axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
@@ -182,6 +200,11 @@ app.get('/cancelappointment', (req, res) => {
   });
 
 });
+
+app.get('/createsuccess', (req, res) => {
+    res.render('pages/createsuccess.ejs')
+})
+
 
 app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')
