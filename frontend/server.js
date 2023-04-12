@@ -178,8 +178,8 @@ app.post('/add_appointment', function(req, res){
     //send to backend api
     axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
     .then(function (response) {
-        if ((response.data.result) === 'good') {
-            res.render('pages/customerindex.ejs')
+        if ((response.data) === 'Appointment added successfully') {
+            res.render('pages/createsuccess.ejs')
         }
         else {
             console.log(response.data)
@@ -198,6 +198,11 @@ app.get('/cancelappointment', (req, res) => {
   });
 
 });
+
+app.get('/createsuccess', (req, res) => {
+    res.render('pages/createsuccess.ejs')
+})
+
 
 app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')

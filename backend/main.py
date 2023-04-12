@@ -357,7 +357,7 @@ def add_appointment():
             query_insert_appointment_services = """INSERT INTO AppointmentService VALUES ('%s', '%s')"""%(service_id, appointment_id)
             execute_query(conn, query_insert_appointment_services)
             
-        return 'Appointment Added'
+        return 'Appointment added successfully'
     
 
     
