@@ -5,6 +5,7 @@ const axios = require('axios');
 const port = 8080;
 const bodyParser  = require('body-parser');
 
+
 const { response } = require('express');
 const { request } = require('express');
 
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded());
 
 app.set("views", path.resolve(__dirname, "views"));
 app.set('view engine', 'ejs');
+
 
 app.get('/', (req, res) => {
     res.render('pages/index.ejs')
@@ -224,6 +226,9 @@ app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')
 })
 
+app.get('/logout', (req, res) => {
+    res.render('pages/logout.ejs')
+})
 
 app.put
 
