@@ -68,7 +68,7 @@
                             <tr>
                                 <td><%=entry.WeekStart%></td>
                                 <td><%=entry.WeekEnd%></td>
-                                <td><%=entry.Earnings%></td>
+                                <td>$<%=entry.Earnings%>.00</td>
                             </tr>
                         <%});%>
                     </tbody>
@@ -88,7 +88,7 @@
                             <tr>
                                 <td><%=entry.Month%></td>
                                 <td><%=entry.Year%></td>
-                                <td><%=entry.Earnings%></td>
+                                <td>$<%=entry.Earnings%>.00</td>
                             </tr>
                         <%});%>
                     </tbody>
@@ -106,7 +106,7 @@
                         <%earningsdata[2].forEach(function(entry) {%>
                             <tr>
                                 <td><%=entry.Today%></td>
-                                <td><%=entry.Earnings%></td>
+                                <td>$<%=entry.Earnings%>.00</td>
                             </tr>
                         <%});%>
                     </tbody>
@@ -127,7 +127,7 @@
                         <%custearningsdata.forEach(function(entry) {%>
                             <tr>
                                 <td><%=entry.Name%></td>
-                                <td><%=entry.Earnings%></td>
+                                <td>$<%=entry.Earnings%>.00</td>
                             </tr>
                         <%});%>
                     </tbody>
