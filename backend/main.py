@@ -232,7 +232,6 @@ def api_numberofappointments():
 
 
 
-#Request to see all appointments:
 #localhost:5000/api/Appointments
 @app.route('/api/Appointments', methods=['GET'])
 def api_appointments():
@@ -587,4 +586,40 @@ def add_employee():
 
     return 'Employee added successfully'
 
+@app.route('/api/employeelist', methods=['GET'])
+def api_employeeinfo():
+        #Earnings Per Customer
+        query1 = """SELECT concat(employee_first_name, ' ' , employee_last_name) as EmployeeName, employee_status, employee_id
+                    from Employee
+                    ORDER BY employee_status;"""
+
+        employees = new_read(query1)
+
+        employeeinfo= []
+
+        for employee in  employees:
+            employeeinfo.append(employee)       
+        return jsonify(employeeinfo)
+
+
+@app.route('/api/employee/<int:id>/changestatusinactive', methods =['POST'])
+def change_status_inactive(id):
+    update_query = "UPDATE Employee SET employee_status='INACTIVE' WHERE employee_id=%s"
+    cursor = conn.cursor()
+    cursor.execute(update_query, (id,))
+    conn.commit()
+
+    return redirect('http://localhost:8080/statussuccess')
+
+@app.route('/api/employee/<int:id>/changestatusactive', methods =['POST'])
+def change_status_active(id):
+    update_query = "UPDATE Employee SET employee_status='ACTIVE' WHERE employee_id=%s"
+    cursor = conn.cursor()
+    cursor.execute(update_query, (id,))
+    conn.commit()
+
+    return redirect('http://localhost:8080/statussuccess')
+
 app.run()
+
+

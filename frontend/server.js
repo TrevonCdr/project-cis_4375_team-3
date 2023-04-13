@@ -239,6 +239,10 @@ app.get('/newemployee', (req, res) => {
     res.render('pages/addemployee.ejs')
 })
 
+app.get('/statussuccess', (req, res) => {
+    res.render('pages/employeestatussuccess.ejs')
+})
+
 app.post('/add_employee', function(req, res) {
     var employeeFirstName = req.body.employeefname;
     var employeeLastName = req.body.employeelname;
@@ -262,6 +266,18 @@ app.post('/add_employee', function(req, res) {
 
 }
 )
+
+app.get('/employeelist', (req, res) => {
+    axios.get(`http://127.0.0.1:5000/api/employeelist`)
+     .then((response)=>{
+     var employees = response.data;
+     // render page of cancel appointments
+     res.render('pages/employeelist.ejs', {
+         employees: employees,
+     });
+  });
+
+});
 
 
   
