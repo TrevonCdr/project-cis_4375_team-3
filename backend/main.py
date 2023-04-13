@@ -384,9 +384,11 @@ def api_appointmentscust():
    
     query = """Select Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
 DATE_FORMAT(appointment_date, '%Y-%m-%d') as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status, email,
-phone_number From Appointment
+phone_number, Concat(Employee.employee_first_name,' ', Employee.employee_last_name) AS 'EmployeeName', appointment_id From Appointment
 join Customer
 on Appointment.customer_id = Customer.customer_id
+join Employee
+on Appointment.employee_id = Employee.employee_id
 where appointment_date >= CURDATE()
 order by appointment_date asc;
 """
