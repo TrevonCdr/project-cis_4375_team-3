@@ -202,6 +202,7 @@ app.post('/add_appointment', function(req, res){
         }
         else {
             console.log(response.data)
+            res.send('Appointment date and time taken');
         }
     })
 })
