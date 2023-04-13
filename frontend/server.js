@@ -59,6 +59,7 @@ app.get('/createappointment', (req, res) => {
     const servicesurl = 'http://127.0.0.1:5000/api/Services';
     
     const date = new Date();
+    date.setDate(date.getDate() + 1);
     var year = date.toLocaleString("default", { year: "numeric" });
     var month = date.toLocaleString("default", { month: "2-digit" });
     var day = date.toLocaleString("default", { day: "2-digit" });
