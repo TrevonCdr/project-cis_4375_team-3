@@ -571,4 +571,20 @@ def cancel_appointment(id):
 
     return redirect('http://localhost:8080/cancelsuccess')
 
+@app.route('/api/add/employee', methods = ['POST'])
+def add_employee():
+    request_data = request.get_json()
+
+    first = request_data['employee_first_name']
+    last = request_data['employee_last_name']
+    status = request_data['employee_status']
+
+    query_insert_appointment = """INSERT
+    INTO Employee (employee_first_name, employee_last_name, employee_status) 
+    values ('%s','%s','%s')"""%(first, last, status)
+
+    execute_query(conn, query_insert_appointment)
+
+    return 'Employee added successfully'
+
 app.run()

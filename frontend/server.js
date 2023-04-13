@@ -226,11 +226,43 @@ app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')
 })
 
+app.get('/newemployeesuccess', (req, res) => {
+    res.render('pages/employeesuccess.ejs')
+})
+
+
 app.get('/logout', (req, res) => {
     res.render('pages/logout.ejs')
 })
 
-app.put
+app.get('/newemployee', (req, res) => {
+    res.render('pages/addemployee.ejs')
+})
+
+app.post('/add_employee', function(req, res) {
+    var employeeFirstName = req.body.employeefname;
+    var employeeLastName = req.body.employeelname;
+    var employeeStatus = req.body.employeestatus;
+
+    var employeeinfo = {
+        'employee_first_name': employeeFirstName,
+        'employee_last_name': employeeLastName,
+        'employee_status': employeeStatus,
+        }
+
+    axios.post('http://127.0.0.1:5000/api/add/employee', employeeinfo)
+    .then(function (response) {
+        if ((response.data) === 'Employee added successfully') {
+            res.render('pages/employeesucess.ejs')
+        }
+        else {
+            console.log(response.data)
+        }
+    })
+
+}
+)
+
 
   
 app.listen(port);
