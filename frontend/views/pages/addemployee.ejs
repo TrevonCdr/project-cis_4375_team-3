@@ -1,0 +1,48 @@
+<html>
+    <body>
+        <header>
+            <%- include('partials/employeenav'); %>
+        </header>
+        <div class="bg-body-tertiary border rounded-3 w-50 mx-auto mt-5 p-5">
+            <h2 class="h-auto w-auto">Add an Employee</h2>
+            <form class="mt-4" action="/add_employee" method="post">
+                <div class="row mb-3 justify-content-around">
+                    <div class="col mb-3">
+                        <label for="employeefname" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="employeefname" placeholder="Employee's first name" name="employeefname">
+                    </div>
+                    <div class="col mb-3">
+                        <label for="employeelname" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="employeelname" placeholder="Employee's Last Name" name="employeelname">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div>
+                        <label for="selectstatus" class="form-label">Status</label>
+                    <select class="form-select" id="employeestatus" name="employeestatus">
+                        <option selected>Select employee status</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                    </div>
+                </div>
+              </form>
+        </div>
+        
+          
+          
+    </body>
+</html>
+<style>
+  h1 {
+      padding-top: 30px;
+      padding-bottom: 30px;
+      padding-left: 100px;
+  }
+</style>

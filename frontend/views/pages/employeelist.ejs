@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <%- include('partials/head'); %>
+    </head>
+    <body>
+        <header>
+            <%- include('partials/employeenav'); %>
+            <style>
+                h1 {
+                    padding-top: 30px;
+                    padding-bottom: 30px;
+                }
+            </style>
+        </header>
+        <h1 class="cover-heading text-center">Lennin Repizo Employees</h1>
+        <div class="container text-dark">
+            <table class="table table-striped table-bordered w-auto mx-auto">
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (var i = 0; i < employees.length; i++) { %>
+                        <tr>
+                            <td><%=employees[i].EmployeeName%></td>
+                            <td><%=employees[i].employee_status%></td>
+                            <td>
+                                <% if (employees[i].employee_status === 'ACTIVE') { %>
+                                    <form method="POST" action="http://localhost:5000/api/employee/<%= employees[i].employee_id %>/changestatusinactive">
+                                        <button class="btn btn-primary" type="submit">Change status</button>
+                                    </form>
+                                <% } else { %>
+                                    <form method="POST" action="http://localhost:5000/api/employee/<%= employees[i].employee_id %>/changestatusactive">
+                                        <button class="btn btn-primary" type="submit">Change Status</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <%}%>
+                </tbody>
+            </table>
+
+
+        </div> 
+        
+        </div> 
+
+        <script>
+            
+        </script>
+    </body>
+</html>

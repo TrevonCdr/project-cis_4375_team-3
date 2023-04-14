@@ -8,12 +8,12 @@
           <form action="/add_appointment" method="post" enctype='application/x-www-form-urlencoded'>
             <div class="form-group">
               <label for="date">Date</label>
-              <input type="date" class="form-control" id="date" name="date">
+              <input type="date" class="form-control" id="date" name="date" min="<%=currDate%>" max="<%=maxDate%>" required>
               <br></br>
             </div>
             <div class="form-group">
               <label for="time">Time</label>
-              <input type="time" class="form-control" id="time" name="time" step="2">
+              <input type="time" class="form-control" id="time" name="time" min="09:00" max="21:00" step="1800" required>
               <br></br>
             </div>
             <div class="form-group">
@@ -24,7 +24,7 @@
             <div class="form-group">
               <h3>Available Employees</h3>
               <%employees.forEach(function(entry) {%>
-              <input type="radio" class="form-check-input" id="<%=entry.employee_id%>" name="employeeid" value="<%=entry.employee_id%>">
+              <input type="radio" class="form-check-input" id="<%=entry.employee_id%>" name="employeeid" value="<%=entry.employee_id%>" required>
               <label for="<%=entry.employee_id%>"><%=entry.employee_first_name%> <%=entry.employee_last_name%></label>
               <br></br>
               <%});%>
@@ -33,7 +33,7 @@
             <div class="form-group">
               <h3>Available Services</h3>
               <%services.forEach(function(entry) {%>
-              <input type="checkbox" class="form-check-input" id="<%=entry.service_id%>" name="serviceinfo" value="<%=entry.service_id%> <%=entry.price%>" >
+              <input type="checkbox" class="form-check-input" id="<%=entry.service_id%>" name="serviceinfo" value="<%=entry.service_id%> <%=entry.price%>">
               <label for="<%=entry.employee_id%>"><%=entry.service_type%> - $<%=entry.price%></label>
               <br></br>
               <%});%>

@@ -87,6 +87,19 @@ app.get('/createappointment', (req, res) => {
     const employeesurl = 'http://127.0.0.1:5000/api/Employees';
     const servicesurl = 'http://127.0.0.1:5000/api/Services';
     
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    var year = date.toLocaleString("default", { year: "numeric" });
+    var month = date.toLocaleString("default", { month: "2-digit" });
+    var day = date.toLocaleString("default", { day: "2-digit" });
+    var currDate = year + "-" + month + "-" + day;
+
+    var nextDate = new Date(date.setMonth(date.getMonth() + 2));
+    var year = nextDate.toLocaleString("default", { year: "numeric" });
+    var month = nextDate.toLocaleString("default", { month: "2-digit" });
+    var day = nextDate.toLocaleString("default", { day: "2-digit" });
+    var maxDate = year + '-' + month + '-' + day;
+    
     axios.get(employeesurl)
      .then((response)=>{
         var employees = response.data 
@@ -97,7 +110,9 @@ app.get('/createappointment', (req, res) => {
         
             res.render('pages/newappointment', {
                 employees: employees,
-                services: services
+                services: services,
+                currDate: currDate,
+                maxDate: maxDate
             })
         });
     });    
@@ -168,6 +183,8 @@ app.post('/add_appointment', function(req, res){
     
     
     var time = req.body.time;
+    time = time + ':00'
+    
     var phoneNumber = req.body.phoneNumber;
     var employeeid = req.body.employeeid;
 
@@ -214,6 +231,7 @@ app.post('/add_appointment', function(req, res){
         }
         else {
             console.log(response.data)
+            res.send('Appointment date and time taken');
         }
     })
 })
@@ -239,9 +257,58 @@ app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')
 })
 
+app.get('/newemployeesuccess', (req, res) => {
+    res.render('pages/employeesuccess.ejs')
+})
+
+
 app.get('/logout', (req, res) => {
     res.render('pages/logout.ejs')
 })
+
+app.get('/newemployee', (req, res) => {
+    res.render('pages/addemployee.ejs')
+})
+
+app.get('/statussuccess', (req, res) => {
+    res.render('pages/employeestatussuccess.ejs')
+})
+
+app.post('/add_employee', function(req, res) {
+    var employeeFirstName = req.body.employeefname;
+    var employeeLastName = req.body.employeelname;
+    var employeeStatus = req.body.employeestatus;
+
+    var employeeinfo = {
+        'employee_first_name': employeeFirstName,
+        'employee_last_name': employeeLastName,
+        'employee_status': employeeStatus,
+        }
+
+    axios.post('http://127.0.0.1:5000/api/add/employee', employeeinfo)
+    .then(function (response) {
+        if ((response.data) === 'Employee added successfully') {
+            res.render('pages/employeesucess.ejs')
+        }
+        else {
+            console.log(response.data)
+        }
+    })
+
+}
+)
+
+app.get('/employeelist', (req, res) => {
+    axios.get(`http://127.0.0.1:5000/api/employeelist`)
+     .then((response)=>{
+     var employees = response.data;
+     // render page of cancel appointments
+     res.render('pages/employeelist.ejs', {
+         employees: employees,
+     });
+  });
+
+});
 
 
 app.get('/tokens', async (req, res) => {
