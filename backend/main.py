@@ -629,8 +629,10 @@ def CheckUser():
 
     # Access email field
     email = json_data['userInfo']['email']
+    username = json_data['userInfo']['cognito:username']
+    first_name = json_data['userInfo']['given_name']
 
-    print(email)
+    print(email + ' ' + username + ' ' + first_name)
     return "Done"
 
 app.run()

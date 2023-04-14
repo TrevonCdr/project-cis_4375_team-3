@@ -313,16 +313,16 @@ app.get('/employeelist', (req, res) => {
 
 app.get('/tokens', async (req, res) => {
     const authorizationCode = req.query.code;
-    const url = 'https://cis4375.auth.us-east-1.amazoncognito.com/oauth2/token';
+    const url = 'https://customerlog.auth.us-east-1.amazoncognito.com/oauth2/token';
   
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Basic N2JpbTkyMmZndDJjcmpuZTBmbzFkaWJ2dW06MWpiMDc3dWI2N25xcDVvdDNzOHFyc2RhN3ZkYnA3Z3Z1OWpvYTJzaDRuYmM2NzhndTBmNA=='
+      'Authorization': 'Basic MTE5cXVrYnI2dGJrMXY5cTc2azk0Z2hscWU6ZGVvMjk2cmtpMWljbG9wZG1xNTZuZDZ2YTJ1bGc0c21pam83bmZjaDczMHBzMWdsNDJp'
     };
   
     const data = {
       'grant_type': 'authorization_code',
-      'client_id': '7bim922fgt2crjne0fo1dibvum',
+      'client_id': '119qukbr6tbk1v9q76k94ghlqe',
       'code': authorizationCode,
       'redirect_uri': 'http://localhost:8080/tokens'
     };
@@ -343,9 +343,9 @@ app.get('/tokens', async (req, res) => {
   // Verifier that expects valid access tokens:
   async function verifyToken(jwt) {
     const verifier = CognitoJwtVerifier.create({
-      userPoolId: "us-east-1_BhAuyf2f3",
+      userPoolId: "us-east-1_v6C9Di70U",
       tokenUse: "access",
-      clientId: "7bim922fgt2crjne0fo1dibvum",
+      clientId: "119qukbr6tbk1v9q76k94ghlqe",
     });
   
     try {
