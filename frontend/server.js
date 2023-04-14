@@ -4,10 +4,14 @@ var path = require('path');
 const axios = require('axios');
 const port = 8080;
 const bodyParser  = require('body-parser');
+const { CognitoJwtVerifier } = require('aws-jwt-verify');
+const jwtDecode = require('jwt-decode');
+
 
 
 const { response } = require('express');
 const { request } = require('express');
+const { userInfo } = require('os');
 
 var selectedID = "";
 app.use(bodyParser.urlencoded());
@@ -37,20 +41,45 @@ app.get('/employeehome', function(req, res) {
 });
 
 app.get('/customerhome', function(req, res) {
+    if (Object.keys(req.query).length === 0) {
+        res.redirect("/");
+    } else {
+        const query = req.query;
+        const data = JSON.parse(query.data);
+        const id =  data.id_token;
+        const token = data.access_token;
+        verifyToken(token)
+            .then((response) => {
+                if (response === null) {
+                    res.redirect("/");
+                } else {
+                    var UserInfo = decodeIdToken(id)
 
-     // get customer's appointments' from api
-     axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
-     .then((response)=>{
- 
-     var appointments = response.data;
-     var tagline = "Here is the data coming from my own API";
-     // render page of appointments
-     res.render('pages/customerindex.ejs', {
-         appointments: appointments,
-         tagline: tagline
-     });
-  });
+                    console.log(typeof UserInfo)
+                    axios.get(`http://127.0.0.1:5000/api/checkAddUser`, {data: {userInfo: UserInfo}})
+                    .then((response)=>{
+                        console.log(response.data)
+                    // get customer's appointments from api
+                        axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
+                            .then((response) => {
+                                var appointments = response.data;
+                                var tagline = "Here is the data coming from my own API";
+                                // render page of appointments
+                                res.render('pages/customerindex.ejs', {
+                                    appointments: appointments,
+                                    tagline: tagline
+                                });
+                            });
+                        })
+                    }   
+                })
+            .catch((error) => {
+                console.log(error);
+                res.status(500).send('Internal Server Error');
+            });
+    }
 });
+
 
 
 app.get('/createappointment', (req, res) => {
@@ -214,7 +243,61 @@ app.get('/logout', (req, res) => {
     res.render('pages/logout.ejs')
 })
 
-app.put
+
+app.get('/tokens', async (req, res) => {
+    const authorizationCode = req.query.code;
+    const url = 'https://cis4375.auth.us-east-1.amazoncognito.com/oauth2/token';
+  
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic N2JpbTkyMmZndDJjcmpuZTBmbzFkaWJ2dW06MWpiMDc3dWI2N25xcDVvdDNzOHFyc2RhN3ZkYnA3Z3Z1OWpvYTJzaDRuYmM2NzhndTBmNA=='
+    };
+  
+    const data = {
+      'grant_type': 'authorization_code',
+      'client_id': '7bim922fgt2crjne0fo1dibvum',
+      'code': authorizationCode,
+      'redirect_uri': 'http://localhost:8080/tokens'
+    };
+  
+    try {
+      const response = await axios.post(url, data, { headers });
+      const responseData = JSON.stringify(response.data)
+      res.redirect(`/customerhome?data=${responseData}`);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('An error occurred');
+    }
+  });
+
+
+  
+
+  // Verifier that expects valid access tokens:
+  async function verifyToken(jwt) {
+    const verifier = CognitoJwtVerifier.create({
+      userPoolId: "us-east-1_BhAuyf2f3",
+      tokenUse: "access",
+      clientId: "7bim922fgt2crjne0fo1dibvum",
+    });
+  
+    try {
+      const payload = await verifier.verify(jwt);
+      console.log("Token is valid. Payload:");
+      return payload;
+    } catch {
+      console.log("Token not valid!");
+      return null;
+    }
+  }
+
+
+
+  function decodeIdToken(idToken) {
+    const decodedToken = jwtDecode(idToken);
+    console.log(decodedToken);
+    return decodedToken;
+  }
 
   
 app.listen(port);

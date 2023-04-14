@@ -9,6 +9,7 @@ from SQL import execute_read_query
 from SQL import new_read
 from datetime import timedelta
 from datetime import date
+import json
 
 #setting up the application
 app = flask.Flask(__name__) #sets up the application
@@ -568,5 +569,17 @@ def cancel_appointment(id):
     conn.commit()
 
     return redirect('http://localhost:8080/cancelsuccess')
+
+@app.route('/api/checkAddUser', methods = ['GET','POST'])
+def CheckUser():
+    data = request.data
+    # Decode bytes string into JSON object
+    json_data = json.loads(data)
+
+    # Access email field
+    email = json_data['userInfo']['email']
+
+    print(email)
+    return "Done"
 
 app.run()
