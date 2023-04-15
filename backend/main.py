@@ -238,7 +238,15 @@ def api_numberofappointments():
 def api_appointments():
     #query for sql to see appointment table:
     
-    query = """Select * from Appointment;"""
+    query = """Select Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
+appointment_date as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status, email,
+phone_number, Concat(Employee.employee_first_name,' ', Employee.employee_last_name) AS 'EmployeeName', appointment_id From Appointment
+join Customer
+on Appointment.customer_id = Customer.customer_id
+join Employee
+on Appointment.employee_id = Employee.employee_id
+where appointment_date >= CURDATE()
+order by appointment_date asc;"""
 
     appointmentinfo = execute_read_query(conn, query)
 
