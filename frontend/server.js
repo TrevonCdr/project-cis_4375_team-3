@@ -6,6 +6,8 @@ const port = 8080;
 const bodyParser  = require('body-parser');
 const { CognitoJwtVerifier } = require('aws-jwt-verify');
 const jwtDecode = require('jwt-decode');
+const NodeCache = require('node-cache');
+const myCache = new NodeCache();
 
 
 
@@ -46,6 +48,7 @@ app.get('/customerhome', function(req, res) {
     } else {
         const query = req.query;
         const data = JSON.parse(query.data);
+        myCache.set('UserToken', data);
         const id =  data.id_token;
         const token = data.access_token;
         verifyToken(token)
@@ -84,6 +87,9 @@ app.get('/customerhome', function(req, res) {
 
 app.get('/createappointment', (req, res) => {
     
+    const userToken = myCache.get('UserToken');
+    console.log(userToken);
+
     const employeesurl = 'http://127.0.0.1:5000/api/Employees';
     const servicesurl = 'http://127.0.0.1:5000/api/Services';
     
@@ -263,6 +269,7 @@ app.get('/newemployeesuccess', (req, res) => {
 
 
 app.get('/logout', (req, res) => {
+    myCache.del('UserToken');
     res.render('pages/logout.ejs')
 })
 
