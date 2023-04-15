@@ -223,17 +223,17 @@ app.post('/add_appointment', function(req, res){
     }
     console.log(appointmentinfo)
     
-    //send to backend api
+     //send to backend api
     axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
     .then(function (response) {
+        
         if ((response.data) === 'Appointment added successfully') {
             res.render('pages/createsuccess.ejs')
         }
         else {
-            console.log(response.data)
-            res.send('Appointment date and time taken');
+            res.send('fail')
         }
-    })
+    });
 })
 // cancel page
 app.get('/cancelappointment', (req, res) => {
