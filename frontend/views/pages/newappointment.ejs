@@ -5,7 +5,7 @@
         </header>
         <h1 class="cover-heading">New Appointment</h1>
         <div class = "container">
-          <form action="/add_appointment" method="post" enctype='application/x-www-form-urlencoded'>
+          <form action='/add_appointment' method="post" enctype='application/x-www-form-urlencoded' id="myForm">
             <div class="form-group">
               <label for="date">Date</label>
               <input type="date" class="form-control" id="date" name="date" min="<%=currDate%>" max="<%=maxDate%>" required>
@@ -47,6 +47,44 @@
           </form> 
     </body>
 </html>
+<script>
+  const form = document.getElementById("myForm");
+  
+  form.addEventListener('submit', (event) => {
+        event.preventDefault();
+            //collecting <form> data
+            
+            const data = new URLSearchParams();
+            for (const pair of new FormData(form)) {
+              data.append(pair[0], pair[1]);
+            }
+            
+            
+
+  fetch('/add_appointment', {
+  method: 'POST',
+  body: data
+  }) 
+  .then(response => response.text())
+  .then(data => {
+      console.log(data);
+      if (data == 'fail') {
+            alert('Appointment date and time taken.')
+        }
+      else {
+            fetch('/createsuccess')
+            .then(response => response.text())
+            .then(data => {
+            console.log(data)
+            document.write(data)
+            })
+      }
+    })
+  });
+  
+  
+  
+</script>
 <style>
   h1 {
       padding-top: 30px;
