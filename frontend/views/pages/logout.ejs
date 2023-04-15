@@ -1,2 +1,33 @@
-<h1>You Have Logged Out</h1>
-<button onclick="window.location.href='http://localhost:8080/';" type="button" class="btn btn-outline-light me-2">Go back Home</button>
+<html>
+    <head>
+        <%- include('partials/head'); %>
+    </head>
+    <body>
+        <header>
+            <%- include('partials/homenav'); %>
+            <style>
+                h1 {
+                    padding-top: 30px;
+                    padding-bottom: 30px;
+                    padding-left: 100px;
+                }
+            </style>
+        </header>
+        
+        <h1 class="text-center">You have successfully logged out!</h1>
+
+        <div class="flex-row">
+            <div class="text-center">
+                <button type="button" class="btn btn-primary mx-auto" onclick="window.location.href='http://localhost:8080/';">
+                    Return to home page
+                </button>
+
+                <button type="button" class="btn btn-primary mx-auto" onclick="window.location.href='https://customerlog.auth.us-east-1.amazoncognito.com/login?client_id=119qukbr6tbk1v9q76k94ghlqe&response_type=code&scope=email+openid+phone+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftokens';">
+                    Customer Login
+                </button>
+            </div>
+    
+        </div>
+    </body>
+</html>
+
