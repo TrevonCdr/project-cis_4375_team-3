@@ -631,9 +631,32 @@ def CheckUser():
     email = json_data['userInfo']['email']
     username = json_data['userInfo']['cognito:username']
     first_name = json_data['userInfo']['given_name']
+    last_name = json_data['userInfo']['family_name']
+    phone_number = json_data['userInfo']['phone_number']
+    format_phone_number = "{}-{}-{}".format(phone_number[2:5], phone_number[5:8], phone_number[8:])
 
-    print(email + ' ' + username + ' ' + first_name)
-    return "Done"
+    query1 = "SELECT * FROM Customer WHERE email = %s AND username = %s;"
+    values = (email, username)
+    cursor = conn.cursor()
+    cursor.execute(query1, values)
+    result = cursor.fetchone()
+    if result is None:
+        try: 
+            insert_query = """INSERT INTO Customer (contact_method_id, first_name, last_name, phone_number, email, username) 
+            VALUES (1, %s, %s, %s, %s, %s)"""
+            insert_values = (first_name, last_name, format_phone_number, email, username)
+            cursor.execute(insert_query, insert_values)
+            conn.commit()
+            return 'Customer added successfully'
+
+        except Exception as e:
+             conn.rollback()
+
+             return jsonify({'error': str(e)}), 500
+    else:
+         print(email + ' ' + username + ' ' + first_name + ' ' + last_name + ' ' + format_phone_number)
+         
+         return "User Found"
 
 app.run()
 

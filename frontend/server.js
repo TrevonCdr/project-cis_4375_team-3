@@ -313,6 +313,7 @@ app.get('/employeelist', (req, res) => {
 
 app.get('/tokens', async (req, res) => {
     const authorizationCode = req.query.code;
+    console.log(authorizationCode)
     const url = 'https://customerlog.auth.us-east-1.amazoncognito.com/oauth2/token';
   
     const headers = {
