@@ -187,6 +187,7 @@ app.post('/add_appointment', function(req, res){
 app.get('/customer_cancelappointment', (req, res) => {
     const userToken = myCache.get('UserToken');
     const token = userToken.access_token;
+    var UserInfo = decodeIdToken(userToken.id_token)
     verifyToken(token)
     .then((response) => {
         if (response === null) {
@@ -194,9 +195,10 @@ app.get('/customer_cancelappointment', (req, res) => {
             console.log('Token not valid')
             res.redirect("/");
         } else {
-            axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
+            axios.get(`http://127.0.0.1:5000/api/CustCancelAppointment/${ UserInfo.email }`)
             .then((response)=>{
                 var appointments = response.data;
+                console.log(appointments)
                 // render page of cancel appointments
                 res.render('pages/cancelappointment.ejs', {
                     appointments: appointments,

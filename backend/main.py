@@ -556,7 +556,8 @@ def api_appointmentscancel():
 DATE_FORMAT(appointment_date, '%Y-%m-%d') as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status From Appointment
 join Customer
 on Appointment.customer_id = Customer.customer_id
-WHERE appointment_status = 'SCHEDULED';
+WHERE appointment_status = 'SCHEDULED'
+;
 """
  
     appointmentinfo = new_read(query)
@@ -569,6 +570,28 @@ WHERE appointment_status = 'SCHEDULED';
         appointmentdata.append(appt)
    
     return jsonify(appointmentdata)
+
+@app.route('/api/CustCancelAppointment/<string:email>', methods=['GET'])
+def api_custappointmentscancel(email):
+    #query for sql to see appointment for cancel page table:
+   
+    query = f"""SELECT appointment_id,
+                      CONCAT(Customer.first_name,' ', Customer.last_name) AS 'Name',
+                      DATE_FORMAT(appointment_date, '%Y-%m-%d') AS appointment_date,
+                      TIME_FORMAT(appointment_time, '%r') AS appointment_time,
+                      appointment_status
+               FROM Appointment
+               JOIN Customer ON Appointment.customer_id = Customer.customer_id
+               WHERE appointment_status = 'SCHEDULED' AND Customer.email = '{email}'"""
+ 
+    appointmentinfo = new_read(query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointments = [dict(row) for row in appointmentinfo]
+ 
+
+    return jsonify(appointments)
      
 
 @app.route('/api/update/appointmentstatuscancel', methods = ['PUT'])
