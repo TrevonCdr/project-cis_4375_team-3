@@ -127,6 +127,8 @@ app.get('/customer_createappointment', (req, res) => {
 // add appointment info to database
 app.post('/add_appointment', function(req, res){
 
+    const userToken = myCache.get('UserToken');
+    var UserInfo = decodeIdToken(userToken.id_token)
     var olddate = req.body.date;
     var date = olddate.replace('-','/')
     date = date.replace('-','/')
@@ -134,7 +136,6 @@ app.post('/add_appointment', function(req, res){
     var time = req.body.time;
     time = time + ':00'
 
-    var phoneNumber = req.body.phoneNumber;
     var employeeid = req.body.employeeid;
     
     // split service id and price info
@@ -162,7 +163,6 @@ app.post('/add_appointment', function(req, res){
     var appointmentinfo = {
         'appointment_date': date,
         'appointment_time': time,
-        'phone_number': phoneNumber,
         'employee_id' : employeeid,
         'service_id' : serviceid,
         'appointment_total': servicePrice,
@@ -171,15 +171,19 @@ app.post('/add_appointment', function(req, res){
     console.log(appointmentinfo)
     
     //send to backend api
-    axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
-    .then(function (response) {
-
-        if ((response.data) === 'Appointment added successfully') {
-            res.render('pages/createsuccess.ejs')
-        }
-        else {
-            res.send('fail')
-        }
+    axios.get(`http://127.0.0.1:5000/api/findCustID/${UserInfo.email}`)
+    .then((response)=>{
+        customers = response.data;
+        let id = customers[0].customer_id;
+        axios.post(`http://127.0.0.1:5000/api/add/appointment/${id}`, appointmentinfo)
+        .then(function (response) {
+            if ((response.data) === 'Appointment added successfully') {
+                res.render('pages/createsuccess.ejs')
+            }
+            else {
+                res.send('fail')
+            }
+        });
     });
 });
 
