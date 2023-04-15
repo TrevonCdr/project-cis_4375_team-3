@@ -380,29 +380,45 @@ def update_status():
 
 @app.route('/api/AppointmentsCustomer', methods=['GET'])
 def api_appointmentscust():
+    data = request.data
+    # Decode bytes string into JSON object
+    json_data = json.loads(data)
+    username = json_data['userInfo']['cognito:username']
+
     #query for sql to see appointment table:
-   
     query = """Select Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
-DATE_FORMAT(appointment_date, '%Y-%m-%d') as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status, email,
+appointment_date as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status, email,
 phone_number, Concat(Employee.employee_first_name,' ', Employee.employee_last_name) AS 'EmployeeName', appointment_id From Appointment
 join Customer
 on Appointment.customer_id = Customer.customer_id
 join Employee
 on Appointment.employee_id = Employee.employee_id
 where appointment_date >= CURDATE()
+AND username = %s
 order by appointment_date asc;
 """
- 
-    appointmentinfo = execute_read_query(conn, query)
- 
-    #adds the data to a blank list then returns it with jsonify:
- 
-    appointmentdata = []
- 
-    for appt in appointmentinfo:
-        appointmentdata.append(appt)
-   
-    return jsonify(appointmentdata)
+
+    cursor = conn.cursor()
+    cursor.execute(query, (username,))
+    results = cursor.fetchall()
+
+     # Convert the results to a list of dictionaries
+    appointments = []
+    for row in results:
+        appointment = {
+            'Name': row[0],
+            'appointment_date':str(row[1]),
+            'appointment_time': str(row[2]),
+            'appointment_status': row[3],
+            'email': row[4],
+            'phone_number': row[5],
+            'EmployeeName': row[6],
+            'appointment_id': row[7]
+        }
+        appointments.append(appointment)
+
+    # Return the list of appointments as JSON
+    return jsonify(appointments)
 
 # (report 7) Number of scheduled appointments per employee
 # localhost:5000/api/ScheduledAppointmentsPerEmployee

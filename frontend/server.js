@@ -60,7 +60,7 @@ app.get('/customerhome', function(req, res) {
                     .then((response)=>{
                         console.log(response.data)
                     // get customer's appointments from api
-                        axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`)
+                        axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`, {data: {userInfo: UserInfo}})
                             .then((response) => {
                                 var appointments = response.data;
                                 var tagline = "Here is the data coming from my own API";
