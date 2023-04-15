@@ -26,104 +26,196 @@ app.get('/', (req, res) => {
     res.render('pages/index.ejs')
 })
 
-app.get('/employeehome', function(req, res) {
-    
-    // get customer's appointments' from api
-    axios.get(`http://127.0.0.1:5000/api/Appointments`)
-        .then((response)=>{
-    
-        var appointments = response.data;
-        var tagline = "Here is the data coming from my own API";
-        // render page of appointments
-        res.render('pages/employeeindex.ejs', {
-            appointments: appointments,
-            tagline: tagline
-        });
-    });       
-});
+// customer pages
+app.get('/startcustcache', function(req, res){
+    const query = req.query;
+    const data = JSON.parse(query.data);
+    myCache.set('UserToken', data);
+    res.redirect('/customerhome')
+})
 
 app.get('/customerhome', function(req, res) {
-    if (Object.keys(req.query).length === 0) {
-        res.redirect("/");
-    } else {
-        const query = req.query;
-        const data = JSON.parse(query.data);
-        myCache.set('UserToken', data);
-        const id =  data.id_token;
-        const token = data.access_token;
-        verifyToken(token)
-            .then((response) => {
-                if (response === null) {
-                    res.redirect("/");
-                } else {
-                    var UserInfo = decodeIdToken(id)
 
-                    console.log(typeof UserInfo)
-                    axios.get(`http://127.0.0.1:5000/api/checkAddUser`, {data: {userInfo: UserInfo}})
-                    .then((response)=>{
-                        console.log(response.data)
-                    // get customer's appointments from api
-                        axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`, {data: {userInfo: UserInfo}})
-                            .then((response) => {
-                                var appointments = response.data;
-                                var tagline = "Here is the data coming from my own API";
-                                // render page of appointments
-                                res.render('pages/customerindex.ejs', {
-                                    appointments: appointments,
-                                    tagline: tagline
-                                });
-                            });
-                        })
-                    }   
-                })
-            .catch((error) => {
-                console.log(error);
-                res.status(500).send('Internal Server Error');
-            });
-    }
-});
-
-
-
-app.get('/createappointment', (req, res) => {
-    
     const userToken = myCache.get('UserToken');
     console.log(userToken);
+    const id = userToken.id_token;
+    const token = userToken.access_token;
+    console.log(token);
+    verifyToken(token)
+        .then((response) => {
+            if (response === null) {
+                myCache.del('UserToken');
+                res.redirect("/");
+            } else {
+                var UserInfo = decodeIdToken(id)
 
-    const employeesurl = 'http://127.0.0.1:5000/api/Employees';
-    const servicesurl = 'http://127.0.0.1:5000/api/Services';
-    
-    const date = new Date();
-    date.setDate(date.getDate() + 1);
-    var year = date.toLocaleString("default", { year: "numeric" });
-    var month = date.toLocaleString("default", { month: "2-digit" });
-    var day = date.toLocaleString("default", { day: "2-digit" });
-    var currDate = year + "-" + month + "-" + day;
-
-    var nextDate = new Date(date.setMonth(date.getMonth() + 2));
-    var year = nextDate.toLocaleString("default", { year: "numeric" });
-    var month = nextDate.toLocaleString("default", { month: "2-digit" });
-    var day = nextDate.toLocaleString("default", { day: "2-digit" });
-    var maxDate = year + '-' + month + '-' + day;
-    
-    axios.get(employeesurl)
-     .then((response)=>{
-        var employees = response.data 
-
-        axios.get(servicesurl)
-        .then((response) =>{
-            var services = response.data    
-        
-            res.render('pages/newappointment', {
-                employees: employees,
-                services: services,
-                currDate: currDate,
-                maxDate: maxDate
+                console.log(typeof UserInfo)
+                axios.get(`http://127.0.0.1:5000/api/checkAddUser`, {data: {userInfo: UserInfo}})
+                .then((response)=>{
+                    console.log(response.data)
+                // get customer's appointments from api
+                    axios.get(`http://127.0.0.1:5000/api/AppointmentsCustomer`, {data: {userInfo: UserInfo}})
+                        .then((response) => {
+                            var appointments = response.data;
+                            var tagline = "Here is the data coming from my own API";
+                            // render page of appointments
+                            res.render('pages/customerindex.ejs', {
+                                appointments: appointments,
+                                tagline: tagline
+                            });
+                        });
+                    })
+                }   
             })
+        .catch((error) => {
+                console.log(error);
+                res.status(500).send('Internal Server Error');
         });
-    });    
+    
+});
+
+
+
+app.get('/customer_createappointment', (req, res) => {
+    
+    const userToken = myCache.get('UserToken');
+    const token = userToken.access_token;
+    console.log(token);
+    verifyToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('UserToken');
+            res.redirect("/");
+        } else {
+            const employeesurl = 'http://127.0.0.1:5000/api/Employees';
+            const servicesurl = 'http://127.0.0.1:5000/api/Services';
+    
+            const date = new Date();
+            date.setDate(date.getDate() + 1);
+            var year = date.toLocaleString("default", { year: "numeric" });
+            var month = date.toLocaleString("default", { month: "2-digit" });
+            var day = date.toLocaleString("default", { day: "2-digit" });
+            var currDate = year + "-" + month + "-" + day;
+
+            var nextDate = new Date(date.setMonth(date.getMonth() + 2));
+            var year = nextDate.toLocaleString("default", { year: "numeric" });
+            var month = nextDate.toLocaleString("default", { month: "2-digit" });
+            var day = nextDate.toLocaleString("default", { day: "2-digit" });
+            var maxDate = year + '-' + month + '-' + day;
+    
+            axios.get(employeesurl)
+            .then((response)=>{
+                var employees = response.data 
+
+                axios.get(servicesurl)
+                .then((response) =>{
+                    var services = response.data    
+        
+                    res.render('pages/newappointment', {
+                        employees: employees,
+                        services: services,
+                        currDate: currDate,
+                        maxDate: maxDate
+                    });
+                });
+            });
+        }
+    });
 });
     
+
+// add appointment info to database
+app.post('/add_appointment', function(req, res){
+
+    var olddate = req.body.date;
+    var date = olddate.replace('-','/')
+    date = date.replace('-','/')
+    
+    var time = req.body.time;
+    time = time + ':00'
+
+    var phoneNumber = req.body.phoneNumber;
+    var employeeid = req.body.employeeid;
+    
+    // split service id and price info
+    var serviceinfo = req.body.serviceinfo;
+    
+    if (typeof serviceinfo == 'string') {
+        serviceinfo = serviceinfo.split(" ");
+        var serviceid = [];
+        serviceid.push(serviceinfo[0]);
+        var servicePrice = serviceinfo[1];
+    } else {
+        var serviceid = [];
+        var servicePrice = 0;
+        for (let x in serviceinfo) {
+            oneservice = serviceinfo[x].split(" ");
+            var service = oneservice[0];
+            var price = oneservice[1];
+            serviceid.push(service);
+            servicePrice += parseInt(price);
+        }
+        servicePrice = String(servicePrice)
+    };
+    var customerNote = req.body.comments;
+    
+    var appointmentinfo = {
+        'appointment_date': date,
+        'appointment_time': time,
+        'phone_number': phoneNumber,
+        'employee_id' : employeeid,
+        'service_id' : serviceid,
+        'appointment_total': servicePrice,
+        'customer_note' : customerNote
+    }
+    console.log(appointmentinfo)
+    
+    //send to backend api
+    axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
+    .then(function (response) {
+
+        if ((response.data) === 'Appointment added successfully') {
+            res.render('pages/createsuccess.ejs')
+        }
+        else {
+            res.send('fail')
+        }
+    });
+});
+
+// customer cancel page
+app.get('/customer_cancelappointment', (req, res) => {
+    const userToken = myCache.get('UserToken');
+    const token = userToken.access_token;
+    verifyToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('UserToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
+            .then((response)=>{
+                var appointments = response.data;
+                // render page of cancel appointments
+                res.render('pages/cancelappointment.ejs', {
+                    appointments: appointments,
+                });
+            });
+        }
+    });
+});
+
+app.get('/createsuccess', (req, res) => {
+    res.render('pages/createsuccess.ejs')
+})
+
+
+app.get('/cancelsuccess', (req, res) => {
+    res.render('pages/cancelsuccess.ejs')
+})
+
+// employee api requests
 app.get('/showreports', (req, res) => {
 
     const commonurl = 'http://127.0.0.1:5000/api/MostandLeastCommonService';
@@ -180,107 +272,6 @@ app.get('/showreports', (req, res) => {
     }));
 });
 
-// add appointment info to database
-app.post('/add_appointment', function(req, res){
-    
-    var olddate = req.body.date;
-    var date = olddate.replace('-','/')
-    date = date.replace('-','/')
-    
-    
-    var time = req.body.time;
-    time = time + ':00'
-    
-    var phoneNumber = req.body.phoneNumber;
-    var employeeid = req.body.employeeid;
-
-    // split service id and price info
-    var serviceinfo = req.body.serviceinfo;
-    
-    if (typeof serviceinfo == 'string') {
-            serviceinfo = serviceinfo.split(" ");
-            var serviceid = [];
-            serviceid.push(serviceinfo[0]);
-            var servicePrice = serviceinfo[1];
-    }   else {
-        var serviceid = [];
-        var servicePrice = 0;
-        for (let x in serviceinfo) {
-            
-            oneservice = serviceinfo[x].split(" ");
-            var service = oneservice[0];
-            var price = oneservice[1];
-            serviceid.push(service);
-            servicePrice += parseInt(price);
-        }
-        servicePrice = String(servicePrice)
-    };
-    var customerNote = req.body.comments;
-    
-    
-    var appointmentinfo = {
-    'appointment_date': date,
-    'appointment_time': time,
-    'phone_number': phoneNumber,
-    'employee_id' : employeeid,
-    'service_id' : serviceid,
-    'appointment_total': servicePrice,
-    'customer_note' : customerNote
-    }
-    console.log(appointmentinfo)
-    
-     //send to backend api
-    axios.post('http://127.0.0.1:5000/api/add/appointment', appointmentinfo)
-    .then(function (response) {
-        
-        if ((response.data) === 'Appointment added successfully') {
-            res.render('pages/createsuccess.ejs')
-        }
-        else {
-            res.send('fail')
-        }
-    });
-})
-// cancel page
-app.get('/cancelappointment', (req, res) => {
-    axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
-     .then((response)=>{
-     var appointments = response.data;
-     // render page of cancel appointments
-     res.render('pages/cancelappointment.ejs', {
-         appointments: appointments,
-     });
-  });
-
-});
-
-app.get('/createsuccess', (req, res) => {
-    res.render('pages/createsuccess.ejs')
-})
-
-
-app.get('/cancelsuccess', (req, res) => {
-    res.render('pages/cancelsuccess.ejs')
-})
-
-app.get('/newemployeesuccess', (req, res) => {
-    res.render('pages/employeesuccess.ejs')
-})
-
-
-app.get('/logout', (req, res) => {
-    myCache.del('UserToken');
-    res.render('pages/logout.ejs')
-})
-
-app.get('/newemployee', (req, res) => {
-    res.render('pages/addemployee.ejs')
-})
-
-app.get('/statussuccess', (req, res) => {
-    res.render('pages/employeestatussuccess.ejs')
-})
-
 app.post('/add_employee', function(req, res) {
     var employeeFirstName = req.body.employeefname;
     var employeeLastName = req.body.employeelname;
@@ -318,6 +309,84 @@ app.get('/employeelist', (req, res) => {
 });
 
 
+app.get('/employeehome', function(req, res) {
+    
+    // get customer's appointments' from api
+    axios.get(`http://127.0.0.1:5000/api/Appointments`)
+        .then((response)=>{
+    
+        var appointments = response.data;
+        var tagline = "Here is the data coming from my own API";
+        // render page of appointments
+        res.render('pages/employeeindex.ejs', {
+            appointments: appointments,
+            tagline: tagline
+        });
+    });       
+});
+
+// todo: change user token to employee token
+app.get('/employee_createappointment', (req, res) => {
+    
+    const userToken = myCache.get('UserToken');
+    const token = userToken.access_token;
+    verifyToken(token)
+    .then((response) => {
+        if (response === null) {
+            res.redirect("/");
+        } else {
+            const employeesurl = 'http://127.0.0.1:5000/api/Employees';
+            const servicesurl = 'http://127.0.0.1:5000/api/Services';
+    
+            const date = new Date();
+            date.setDate(date.getDate() + 1);
+            var year = date.toLocaleString("default", { year: "numeric" });
+            var month = date.toLocaleString("default", { month: "2-digit" });
+            var day = date.toLocaleString("default", { day: "2-digit" });
+            var currDate = year + "-" + month + "-" + day;
+
+            var nextDate = new Date(date.setMonth(date.getMonth() + 2));
+            var year = nextDate.toLocaleString("default", { year: "numeric" });
+            var month = nextDate.toLocaleString("default", { month: "2-digit" });
+            var day = nextDate.toLocaleString("default", { day: "2-digit" });
+            var maxDate = year + '-' + month + '-' + day;
+    
+            axios.get(employeesurl)
+            .then((response)=>{
+                var employees = response.data 
+
+                axios.get(servicesurl)
+                .then((response) =>{
+                    var services = response.data    
+        
+                    res.render('pages/newappointment', {
+                        employees: employees,
+                        services: services,
+                        currDate: currDate,
+                        maxDate: maxDate
+                    });
+                });
+            });
+        }
+    });
+});
+
+
+app.get('/newemployeesuccess', (req, res) => {
+    res.render('pages/employeesuccess.ejs')
+})
+
+
+app.get('/newemployee', (req, res) => {
+    res.render('pages/addemployee.ejs')
+})
+
+app.get('/statussuccess', (req, res) => {
+    res.render('pages/employeestatussuccess.ejs')
+})
+
+
+
 app.get('/tokens', async (req, res) => {
     const authorizationCode = req.query.code;
     console.log(authorizationCode)
@@ -338,18 +407,18 @@ app.get('/tokens', async (req, res) => {
     try {
       const response = await axios.post(url, data, { headers });
       const responseData = JSON.stringify(response.data)
-      res.redirect(`/customerhome?data=${responseData}`);
+      res.redirect(`/startcustcache?data=${responseData}`);
     } catch (error) {
       console.error(error);
       res.status(500).send('An error occurred');
     }
-  });
+});
 
 
   
 
-  // Verifier that expects valid access tokens:
-  async function verifyToken(jwt) {
+// Verifier that expects valid access tokens:
+async function verifyToken(jwt) {
     const verifier = CognitoJwtVerifier.create({
       userPoolId: "us-east-1_v6C9Di70U",
       tokenUse: "access",
@@ -364,16 +433,20 @@ app.get('/tokens', async (req, res) => {
       console.log("Token not valid!");
       return null;
     }
-  }
+}
 
 
 
-  function decodeIdToken(idToken) {
+function decodeIdToken(idToken) {
     const decodedToken = jwtDecode(idToken);
     console.log(decodedToken);
     return decodedToken;
-  }
+}
 
+app.get('/logout', (req, res) => {
+    myCache.del('UserToken');
+    res.render('pages/logout.ejs')
+})
   
 app.listen(port);
 console.log('listening for request on port' + port);
