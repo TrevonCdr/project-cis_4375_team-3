@@ -608,6 +608,30 @@ def api_custappointmentscancel(email):
 
     return jsonify(appointments)
 
+@app.route('/api/AdminCancelAppointment', methods=['GET'])
+def api_adminappointmentscancel():
+    #query for sql to see appointment for cancel page table:
+   
+    query = f"""SELECT appointment_id,
+                      CONCAT(Customer.first_name,' ', Customer.last_name) AS 'Name',
+                      DATE_FORMAT(appointment_date, '%Y-%m-%d') AS appointment_date,
+                      TIME_FORMAT(appointment_time, '%r') AS appointment_time,
+                      appointment_status
+               FROM Appointment
+               JOIN Customer ON Appointment.customer_id = Customer.customer_id
+               WHERE appointment_status = 'SCHEDULED'"""
+ 
+    appointmentinfo = new_read(query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointments = [dict(row) for row in appointmentinfo]
+ 
+
+    return jsonify(appointments)
+
+
+
 @app.route('/api/findCustID/<string:email>', methods=['GET'])
 def findCustID(email):
     #query for sql to see appointment for cancel page table:
@@ -649,6 +673,15 @@ def cancel_appointment(id):
     conn.commit()
 
     return redirect('http://localhost:8080/cancelsuccess')
+
+@app.route('/api/appointments/<int:id>/admincancel', methods =['POST'])
+def admincancel_appointment(id):
+    update_query = "UPDATE Appointment SET appointment_status='CANCELED' WHERE appointment_id=%s"
+    cursor = conn.cursor()
+    cursor.execute(update_query, (id,))
+    conn.commit()
+
+    return redirect('http://localhost:8080/admincancelsucess')
 
 @app.route('/api/add/employee', methods = ['POST'])
 def add_employee():

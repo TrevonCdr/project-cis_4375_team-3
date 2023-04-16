@@ -321,7 +321,7 @@ app.post('/add_employee', function(req, res) {
 )
 
 
-app.get('/employee_cancelappointment', (req, res) => {
+app.get('/admin_cancelappointment', (req, res) => {
     const AdToken = myCache.get('AdToken');
     const token = AdToken.access_token;
     verifyAdminToken(token)
@@ -331,11 +331,11 @@ app.get('/employee_cancelappointment', (req, res) => {
             console.log('Token not valid')
             res.redirect("/");
         } else {
-            axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
+            axios.get(`http://127.0.0.1:5000/api/AdminCancelAppointment`)
             .then((response)=>{
                 var appointments = response.data;
                 // render page of cancel appointments
-                res.render('pages/cancelappointment.ejs', {
+                res.render('pages/admincancelappointment.ejs', {
                     appointments: appointments,
                 });
             });
@@ -343,6 +343,9 @@ app.get('/employee_cancelappointment', (req, res) => {
     });
 });
 
+app.get('/admincancelsuccess', (req, res) => {
+    res.render('pages/admincancelsuccess.ejs')
+})
 
 
 app.get('/employeelist', (req, res) => {
