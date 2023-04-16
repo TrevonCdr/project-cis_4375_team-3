@@ -397,6 +397,9 @@ app.get('/employeehome', function(req, res) {
     });
 });
 
+app.get('/about_us', (req, res) => {
+    res.render('pages/aboutus.ejs')
+})
 
 
 app.get('/newemployeesuccess', (req, res) => {
