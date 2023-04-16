@@ -1,6 +1,6 @@
 # Backend
 
-This implementation is for NodeJS based on [Express](https://expressjs.com/) using a mySQL database [mySQL](https://www.mysql.com).
+This implementation uses [Flask](https://flask.palletsprojects.com/en/2.2.x/) , including a mySQL database [mySQL](https://www.mysql.com).
 
 ## Project setup
 ```
