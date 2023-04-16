@@ -248,15 +248,28 @@ on Appointment.employee_id = Employee.employee_id
 where appointment_date >= CURDATE()
 order by appointment_date asc;"""
 
-    appointmentinfo = execute_read_query(conn, query)
+    cursor = conn.cursor()
+    cursor.execute(query)
+    appointmentinfo = cursor.fetchall()
 
     #adds the data to a blank list then returns it with jsonify:
 
     appointmentdata = []
 
-    for appt in appointmentinfo:
-        appointmentdata.append(appt)
-    
+    for row in appointmentinfo:
+        appointment = {
+            'Name': row[0],
+            'appointment_date':str(row[1]),
+            'appointment_time': str(row[2]),
+            'appointment_status': row[3],
+            'email': row[4],
+            'phone_number': row[5],
+            'EmployeeName': row[6],
+            'appointment_id': row[7]
+        }
+        appointmentdata.append(appointment)
+
+    # Return the list of appointments as JSON
     return jsonify(appointmentdata)
 
 #Request to view all employees
