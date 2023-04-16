@@ -220,6 +220,28 @@ app.get('/customer_cancelappointment', (req, res) => {
     });
 });
 
+app.get('/customer_contactmethod', function(req,res) {
+    const userToken = myCache.get('UserToken');
+    const token = userToken.access_token;
+    var UserInfo = decodeIdToken(userToken.id_token)
+    verifyToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('UserToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            axios.get(`http://127.0.0.1:5000/api/CustContactMethod/${UserInfo.email}`)
+            .then((response)=>{
+                contactmethod = response.data;
+                console.log(contactmethod)
+                res.render('pages/contactmethod.ejs', {contactmethod: contactmethod});
+            });
+        }
+    });
+})
+
+
 app.get('/createsuccess', (req, res) => {
     res.render('pages/createsuccess.ejs')
 })
@@ -227,6 +249,10 @@ app.get('/createsuccess', (req, res) => {
 
 app.get('/cancelsuccess', (req, res) => {
     res.render('pages/cancelsuccess.ejs')
+})
+
+app.get('/changecontactmethodsuccess', (req, res) => {
+    res.render('pages/contactmethodsuccess.ejs')
 })
 
 // employee api requests

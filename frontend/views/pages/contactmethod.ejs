@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <%- include('partials/head'); %>
+    </head>
+    <body>
+        <header>
+            <%- include('partials/employeenav'); %>
+            <style>
+                h1 {
+                    padding-top: 30px;
+                    padding-bottom: 30px;
+                }
+            </style>
+        </header>
+        
+        <% if (contactmethod[0].contact_method_status === 'EMAIL') { %>
+            <div class="text-center" id="emaildiv">
+                <form method="POST" action="http://localhost:5000/api/ContactMethodToPhone/<%= contactmethod[0].customer_id %>">
+                    <h1>Your preferred method of contact is: <%= contactmethod[0].contact_method_status%></h1>
+                      <div class="text-center mb-3">
+                        <button type="submit" class="btn btn-primary mx-auto">
+                            Click here to change to phone
+                        </button>
+                    </div>
+                </form>
+            </div>
+          <% } else if (contactmethod[0].contact_method_status === 'PHONE') { %>
+            <div class="text-center" id="phonediv">
+                <form method="POST" action="http://localhost:5000/api/ContactMethodToEmail/<%= contactmethod[0].customer_id %>">
+                    <h1>Your preferred method of contact is: <%= contactmethod[0].contact_method_status%></h1>
+                      <div class="text-center mb-3">
+                        <button type="submit" class="btn btn-primary mx-auto">
+                            Click here to change to Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+          <% } %>
+    </body>
+</html>

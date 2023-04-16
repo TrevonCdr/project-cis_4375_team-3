@@ -608,6 +608,46 @@ def api_custappointmentscancel(email):
 
     return jsonify(appointments)
 
+@app.route('/api/CustContactMethod/<string:email>', methods=['GET'])
+def cust_contactmethod(email):
+   
+    query = f"""SELECT contact_method_status, customer_id
+                from Customer
+                Join ContactMethod on  Customer.contact_method_id = ContactMethod.contact_method_id
+                WHERE Customer.email = '{email}';"""
+ 
+    contactmethodinfo = new_read(query)
+    contactdata = []
+    for contact in contactmethodinfo:
+         contactdata.append(contact)
+    return jsonify(contactdata)
+ 
+@app.route('/api/ContactMethodToPhone/<int:id>', methods=['POST'])
+def cust_contactmethod_tophone(id):
+   
+    update_query = """UPDATE Customer
+                SET contact_method_id = 1
+                WHERE customer_id = %s"""
+    
+    cursor = conn.cursor()
+    cursor.execute(update_query, (id,))
+    conn.commit()
+
+    return redirect('http://localhost:8080/changecontactmethodsuccess')
+
+@app.route('/api/ContactMethodToEmail/<int:id>', methods=['POST'])
+def cust_contactmethod_toemail(id):
+   
+    update_query = """UPDATE Customer
+                SET contact_method_id = 2
+                WHERE customer_id = %s"""
+    
+    cursor = conn.cursor()
+    cursor.execute(update_query, (id,))
+    conn.commit()
+
+    return redirect('http://localhost:8080/changecontactmethodsuccess')
+
 @app.route('/api/AdminCancelAppointment', methods=['GET'])
 def api_adminappointmentscancel():
     #query for sql to see appointment for cancel page table:
