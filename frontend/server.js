@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
     res.render('pages/index.ejs')
 })
 
-// customer pages
+// route saves the user token to MyCache part of NodeCache
 app.get('/startcustcache', function(req, res){
     const query = req.query;
     const data = JSON.parse(query.data);
@@ -34,6 +34,7 @@ app.get('/startcustcache', function(req, res){
     res.redirect('/customerhome')
 })
 
+// route saves the Admin token to MyCache part of NodeCache
 app.get('/startadmincache', function(req, res){
     const query = req.query;
     const data = JSON.parse(query.data);
@@ -396,53 +397,6 @@ app.get('/employeehome', function(req, res) {
     });
 });
 
-// todo: change user token to employee token
-app.get('/employee_createappointment', (req, res) => {
-    
-    const AdToken = myCache.get('AdToken');
-    const token = AdToken.access_token;
-    verifyAdminToken(token)
-    .then((response) => {
-        if (response === null) {
-            myCache.del('AdToken');
-            console.log('Token not valid')
-            res.redirect("/");
-        } else {
-            const employeesurl = 'http://127.0.0.1:5000/api/Employees';
-            const servicesurl = 'http://127.0.0.1:5000/api/Services';
-    
-            const date = new Date();
-            date.setDate(date.getDate() + 1);
-            var year = date.toLocaleString("default", { year: "numeric" });
-            var month = date.toLocaleString("default", { month: "2-digit" });
-            var day = date.toLocaleString("default", { day: "2-digit" });
-            var currDate = year + "-" + month + "-" + day;
-
-            var nextDate = new Date(date.setMonth(date.getMonth() + 2));
-            var year = nextDate.toLocaleString("default", { year: "numeric" });
-            var month = nextDate.toLocaleString("default", { month: "2-digit" });
-            var day = nextDate.toLocaleString("default", { day: "2-digit" });
-            var maxDate = year + '-' + month + '-' + day;
-    
-            axios.get(employeesurl)
-            .then((response)=>{
-                var employees = response.data 
-
-                axios.get(servicesurl)
-                .then((response) =>{
-                    var services = response.data    
-        
-                    res.render('pages/newappointment', {
-                        employees: employees,
-                        services: services,
-                        currDate: currDate,
-                        maxDate: maxDate
-                    });
-                });
-            });
-        }
-    });
-});
 
 
 app.get('/newemployeesuccess', (req, res) => {
@@ -451,7 +405,19 @@ app.get('/newemployeesuccess', (req, res) => {
 
 
 app.get('/newemployee', (req, res) => {
-    res.render('pages/addemployee.ejs')
+    const AdToken = myCache.get('AdToken');
+    console.log(AdToken);
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            res.render('pages/addemployee.ejs')
+        }
+    })
 })
 
 app.get('/statussuccess', (req, res) => {
