@@ -34,6 +34,13 @@ app.get('/startcustcache', function(req, res){
     res.redirect('/customerhome')
 })
 
+app.get('/startadmincache', function(req, res){
+    const query = req.query;
+    const data = JSON.parse(query.data);
+    myCache.set('AdToken', data);
+    res.redirect('/employeehome')
+})
+
 app.get('/customerhome', function(req, res) {
 
     const userToken = myCache.get('UserToken');
@@ -217,59 +224,69 @@ app.get('/cancelsuccess', (req, res) => {
 
 // employee api requests
 app.get('/showreports', (req, res) => {
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
 
-    const commonurl = 'http://127.0.0.1:5000/api/MostandLeastCommonService';
-    const contacturl = 'http://127.0.0.1:5000/api/Contacttype'
-    const earningsurl = 'http://127.0.0.1:5000/api/Earnings'
-    const custearningsurl = 'http://127.0.0.1:5000/api/earningspercustomer'
-    const busydayurl = 'http://127.0.0.1:5000/api/busiestdayofweek'
-    const custcancelurl = 'http://127.0.0.1:5000/api/customersmostcancel'
-    const numappointmentsurl = 'http://127.0.0.1:5000/api/numberofappointments'
-    const employeeappointmenturl = 'http://127.0.0.1:5000/api/ScheduledAppointmentsPerEmployee'
-    const profitableurl = 'http://127.0.0.1:5000/api/ServiceProfitability'
+        const commonurl = 'http://127.0.0.1:5000/api/MostandLeastCommonService';
+        const contacturl = 'http://127.0.0.1:5000/api/Contacttype'
+        const earningsurl = 'http://127.0.0.1:5000/api/Earnings'
+        const custearningsurl = 'http://127.0.0.1:5000/api/earningspercustomer'
+        const busydayurl = 'http://127.0.0.1:5000/api/busiestdayofweek'
+        const custcancelurl = 'http://127.0.0.1:5000/api/customersmostcancel'
+        const numappointmentsurl = 'http://127.0.0.1:5000/api/numberofappointments'
+        const employeeappointmenturl = 'http://127.0.0.1:5000/api/ScheduledAppointmentsPerEmployee'
+        const profitableurl = 'http://127.0.0.1:5000/api/ServiceProfitability'
 
-    axios.all([
-        axios.get(commonurl),
-        axios.get(contacturl),
-        axios.get(earningsurl),
-        axios.get(custearningsurl),
-        axios.get(busydayurl),
-        axios.get(custcancelurl),
-        axios.get(numappointmentsurl),
-        axios.get(employeeappointmenturl),
-        axios.get(profitableurl)
-    ]).then(axios.spread((
-        response1,
-        response2,
-        response3,
-        response4,
-        response5,
-        response6,
-        response7,
-        response8,
-        response9
-        ) => {
-        var commonservicedata = response1.data;
-        var contactdata = response2.data;
-        var earningsdata = response3.data;
-        var custearningsdata = response4.data;
-        var busydaydata = response5.data;
-        var custcanceldata = response6.data;
-        var numappointmentsdata = response7.data;
-        var employeeappointmentdata = response8.data;
-        var profitabledata = response9.data;
-        res.render('pages/reports.ejs', {
-            commonservicedata: commonservicedata,
-            contactdata: contactdata,
-            earningsdata: earningsdata,
-            custearningsdata: custearningsdata,
-            busydaydata: busydaydata,
-            custcanceldata: custcanceldata,
-            numappointmentsdata: numappointmentsdata,
-            employeeappointmentdata: employeeappointmentdata,
-            profitabledata: profitabledata
-        });
-    }));
+        axios.all([
+            axios.get(commonurl),
+            axios.get(contacturl),
+            axios.get(earningsurl),
+            axios.get(custearningsurl),
+            axios.get(busydayurl),
+            axios.get(custcancelurl),
+            axios.get(numappointmentsurl),
+            axios.get(employeeappointmenturl),
+            axios.get(profitableurl)
+        ]).then(axios.spread((
+            response1,
+            response2,
+            response3,
+            response4,
+            response5,
+            response6,
+            response7,
+            response8,
+            response9
+            ) => {
+            var commonservicedata = response1.data;
+            var contactdata = response2.data;
+            var earningsdata = response3.data;
+            var custearningsdata = response4.data;
+            var busydaydata = response5.data;
+            var custcanceldata = response6.data;
+            var numappointmentsdata = response7.data;
+            var employeeappointmentdata = response8.data;
+            var profitabledata = response9.data;
+            res.render('pages/reports.ejs', {
+                commonservicedata: commonservicedata,
+                contactdata: contactdata,
+                earningsdata: earningsdata,
+                custearningsdata: custearningsdata,
+                busydaydata: busydaydata,
+                custcanceldata: custcanceldata,
+                numappointmentsdata: numappointmentsdata,
+                employeeappointmentdata: employeeappointmentdata,
+                profitabledata: profitabledata
+            });
+        }));
+    }})
 });
 
 app.post('/add_employee', function(req, res) {
@@ -296,43 +313,93 @@ app.post('/add_employee', function(req, res) {
 }
 )
 
-app.get('/employeelist', (req, res) => {
-    axios.get(`http://127.0.0.1:5000/api/employeelist`)
-     .then((response)=>{
-     var employees = response.data;
-     // render page of cancel appointments
-     res.render('pages/employeelist.ejs', {
-         employees: employees,
-     });
-  });
 
+app.get('/employee_cancelappointment', (req, res) => {
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            axios.get(`http://127.0.0.1:5000/api/CancelAppointment`)
+            .then((response)=>{
+                var appointments = response.data;
+                // render page of cancel appointments
+                res.render('pages/cancelappointment.ejs', {
+                    appointments: appointments,
+                });
+            });
+        }
+    });
 });
 
 
+
+app.get('/employeelist', (req, res) => {
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            axios.get(`http://127.0.0.1:5000/api/employeelist`)
+            .then((response)=>{
+                var employees = response.data;
+                // render page of cancel appointments
+                res.render('pages/employeelist.ejs', {
+                    employees: employees,
+                });
+            });
+        }
+    });
+});
+
+
+
 app.get('/employeehome', function(req, res) {
+    const AdToken = myCache.get('AdToken');
+    console.log(AdToken);
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
     
-    // get customer's appointments' from api
-    axios.get(`http://127.0.0.1:5000/api/Appointments`)
-        .then((response)=>{
+            // get customer's appointments' from api
+            axios.get(`http://127.0.0.1:5000/api/Appointments`)
+            .then((response)=>{
     
-        var appointments = response.data;
-        var tagline = "Here is the data coming from my own API";
-        // render page of appointments
-        res.render('pages/employeeindex.ejs', {
-            appointments: appointments,
-            tagline: tagline
-        });
-    });       
+                var appointments = response.data;
+                var tagline = "Here is the data coming from my own API";
+                // render page of appointments
+                res.render('pages/employeeindex.ejs', {
+                    appointments: appointments,
+                    tagline: tagline
+                });
+            });       
+        }
+    });
 });
 
 // todo: change user token to employee token
 app.get('/employee_createappointment', (req, res) => {
     
-    const userToken = myCache.get('UserToken');
-    const token = userToken.access_token;
-    verifyToken(token)
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
     .then((response) => {
         if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
             res.redirect("/");
         } else {
             const employeesurl = 'http://127.0.0.1:5000/api/Employees';
@@ -386,7 +453,7 @@ app.get('/statussuccess', (req, res) => {
 })
 
 
-
+// geting access and id tokens for customers
 app.get('/tokens', async (req, res) => {
     const authorizationCode = req.query.code;
     console.log(authorizationCode)
@@ -415,9 +482,54 @@ app.get('/tokens', async (req, res) => {
 });
 
 
+// getting tokens for admin account
+app.get('/employeetokens', async (req, res) => {
+    const authorizationCode = req.query.code;
+    console.log(authorizationCode)
+    const url = 'https://adminlogins.auth.us-east-1.amazoncognito.com/oauth2/token';
+  
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic Mmgya3QwNmQ2ZW52N2QxZmdraWNvZWphanA6cHRqY2pyZzVmdnZzMjc2ZzBqY200ZTVrbGc0czd1YWxzZWViaTl1ZHZkZ25zanFhNHMx'
+    };
+  
+    const data = {
+      'grant_type': 'authorization_code',
+      'client_id': '2h2kt06d6env7d1fgkicoejajp',
+      'code': authorizationCode,
+      'redirect_uri': 'http://localhost:8080/employeetokens'
+    };
+  
+    try {
+      const response = await axios.post(url, data, { headers });
+      const responseData = JSON.stringify(response.data)
+      res.redirect(`/startadmincache?data=${responseData}`);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('An error occurred');
+    }
+});
+
   
 
 // Verifier that expects valid access tokens:
+async function verifyAdminToken(jwt) {
+    const verifier = CognitoJwtVerifier.create({
+      userPoolId: "us-east-1_rkE7sHPaH",
+      tokenUse: "access",
+      clientId: "2h2kt06d6env7d1fgkicoejajp",
+    });
+  
+    try {
+      const payload = await verifier.verify(jwt);
+      console.log("Token is valid. Payload:");
+      return payload;
+    } catch {
+      console.log("Token not valid!");
+      return null;
+    }
+}
+
 async function verifyToken(jwt) {
     const verifier = CognitoJwtVerifier.create({
       userPoolId: "us-east-1_v6C9Di70U",
