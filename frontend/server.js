@@ -343,8 +343,8 @@ app.get('/admin_cancelappointment', (req, res) => {
     });
 });
 
-app.get('/admincancelsuccess', (req, res) => {
-    res.render('pages/admincancelsuccess.ejs')
+app.get('/admincancelsucess', (req, res) => {
+    res.render('pages/admincancelsucess.ejs')
 })
 
 

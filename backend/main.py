@@ -418,6 +418,7 @@ join Employee
 on Appointment.employee_id = Employee.employee_id
 where appointment_date >= CURDATE()
 AND username = %s
+AND appointment_status = 'SCHEDULED'
 order by appointment_date asc;
 """
 
@@ -568,7 +569,7 @@ def api_appointmentscancel():
     #query for sql to see appointment for cancel page table:
    
     query = """Select appointment_id, Concat(Customer.first_name,' ', Customer.last_name) AS 'Name',
-DATE_FORMAT(appointment_date, '%Y-%m-%d') as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status From Appointment
+DATE_FORMAT(appointment_date as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status From Appointment
 join Customer
 on Appointment.customer_id = Customer.customer_id
 WHERE appointment_status = 'SCHEDULED'
