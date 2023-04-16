@@ -8,12 +8,15 @@
           <form action='/add_appointment' method="post" enctype='application/x-www-form-urlencoded' id="myForm">
             <div class="form-group">
               <label for="date">Date</label>
-              <input type="date" class="form-control" id="date" name="date" min="<%=currDate%>" max="<%=maxDate%>" required>
+              <input type="date" class="form-control" id="date" name="date" min="<%=currDate%>" max="<%=maxDate%>" style="width:150px" required>
+              <small style="font-size:small">Closed on Sundays</small>
               <br></br>
             </div>
             <div class="form-group">
               <label for="time">Time</label>
-              <input type="time" class="form-control" id="time" name="time" min="09:00" max="21:00" step="1800" required>
+              <input type="time" class="form-control" id="time" name="time" min="09:00" max="18:00" step="1800" style="width:150px" required>
+              <span class="validity"></span>
+              <small style="font-size:small">9:00 AM-6:00 PM</small>
               <br></br>
             </div>
             <div class="form-group">
@@ -35,7 +38,7 @@
               <br></br>  
             </div>
             <div class="form-group">
-                <textarea id="customerNote" name="comments" rows="4" cols="50" placeholder="Please enter any additional info"></textarea>
+                <textarea id="customerNote" name="comments" rows="4" cols="40" placeholder="Please enter any additional info"></textarea>
                 <br></br>
             </div>
             <input class="btn btn-lg btn-primary btn-block" type="submit" id="login-button">
@@ -43,6 +46,27 @@
     </body>
 </html>
 <script>
+  
+  //prevent user from entering date using keyboard
+  function keydown() {
+    document.getElementById('date').setAttribute("onkeydown", "return false");
+  }
+  keydown()
+
+  //prevent user from entering Sunday as a date
+  const picker = document.getElementById('date');
+  picker.addEventListener('input', function(e){
+  var day = new Date(this.value).getUTCDay();
+  console.log(day)
+  if([0].includes(day)){
+    e.preventDefault();
+    this.value = '';
+    alert('Sunday not allowed');
+  }
+  });
+  
+  
+
   const form = document.getElementById("myForm");
   
   form.addEventListener('submit', (event) => {
@@ -76,9 +100,6 @@
       }
     })
   });
-  
-  
-  
 </script>
 <style>
   h1 {
@@ -86,4 +107,20 @@
       padding-bottom: 30px;
       padding-left: 100px;
   }
+
+span::after {
+  padding-left: 5px;
+}  
+
+input:optional {
+  border-color: gray;
+}
+input:required:valid + span::after {
+  border-color: green;
+  content:"✓";
+}
+input:invalid + span::after {
+  content: "✖";
+}
 </style>
+
