@@ -221,12 +221,34 @@ app.get('/customer_cancelappointment', (req, res) => {
 });
 
 app.get('/createsuccess', (req, res) => {
-    res.render('pages/createsuccess.ejs')
+    const userToken = myCache.get('UserToken');
+    const token = userToken.access_token;
+    console.log(token);
+    verifyToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('UserToken');
+            res.redirect("/");
+        } else {
+            res.render('pages/createsuccess.ejs')
+        }
+    })
 })
 
 
 app.get('/cancelsuccess', (req, res) => {
-    res.render('pages/cancelsuccess.ejs')
+    const userToken = myCache.get('UserToken');
+    const token = userToken.access_token;
+    console.log(token);
+    verifyToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('UserToken');
+            res.redirect("/");
+        } else {
+            res.render('pages/cancelsuccess.ejs')
+        }
+    })
 })
 
 // employee api requests
@@ -297,26 +319,36 @@ app.get('/showreports', (req, res) => {
 });
 
 app.post('/add_employee', function(req, res) {
-    var employeeFirstName = req.body.employeefname;
-    var employeeLastName = req.body.employeelname;
-    var employeeStatus = req.body.employeestatus;
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            var employeeFirstName = req.body.employeefname;
+            var employeeLastName = req.body.employeelname;
+            var employeeStatus = req.body.employeestatus;
 
-    var employeeinfo = {
-        'employee_first_name': employeeFirstName,
-        'employee_last_name': employeeLastName,
-        'employee_status': employeeStatus,
-        }
+            var employeeinfo = {
+                'employee_first_name': employeeFirstName,
+                'employee_last_name': employeeLastName,
+                'employee_status': employeeStatus,
+                }
 
-    axios.post('http://127.0.0.1:5000/api/add/employee', employeeinfo)
-    .then(function (response) {
-        if ((response.data) === 'Employee added successfully') {
-            res.render('pages/employeesucess.ejs')
-        }
-        else {
-            console.log(response.data)
+            axios.post('http://127.0.0.1:5000/api/add/employee', employeeinfo)
+            .then(function (response) {
+                if ((response.data) === 'Employee added successfully') {
+                    res.render('pages/employeesucess.ejs')
+                }
+                else {
+                    console.log(response.data)
+                }
+            })
         }
     })
-
 }
 )
 
@@ -344,7 +376,18 @@ app.get('/admin_cancelappointment', (req, res) => {
 });
 
 app.get('/admincancelsucess', (req, res) => {
-    res.render('pages/admincancelsucess.ejs')
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            res.render('pages/admincancelsucess.ejs')
+        }
+    })
 })
 
 
@@ -406,7 +449,18 @@ app.get('/about_us', (req, res) => {
 
 
 app.get('/newemployeesuccess', (req, res) => {
-    res.render('pages/employeesuccess.ejs')
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            res.render('pages/employeesuccess.ejs')
+        }
+    })
 })
 
 
@@ -427,7 +481,18 @@ app.get('/newemployee', (req, res) => {
 })
 
 app.get('/statussuccess', (req, res) => {
-    res.render('pages/employeestatussuccess.ejs')
+    const AdToken = myCache.get('AdToken');
+    const token = AdToken.access_token;
+    verifyAdminToken(token)
+    .then((response) => {
+        if (response === null) {
+            myCache.del('AdToken');
+            console.log('Token not valid')
+            res.redirect("/");
+        } else {
+            res.render('pages/employeestatussuccess.ejs')
+        }
+    })
 })
 
 
