@@ -297,36 +297,38 @@ def api_services():
 
 #Request to add an appointments:
     
-@app.route('/api/add/appointment', methods=['POST'])
-def add_appointment():
+@app.route('/api/add/appointment/<int:id>', methods=['POST'])
+def add_appointment(id):
     request_data = request.get_json()
 
     newemployee_id = request_data['employee_id']
     
-    #Getting customer_id based on phone number:
-
-    phonenumber = request_data['phone_number']
-    querycustid = """Select customer_id from Customer where phone_number = '%s'"""%(phonenumber)
-    newcustidinfo = execute_read_query(conn, querycustid)
-    data = newcustidinfo[0]
-    for values in data.values():
-        newcustid = values
     newappointment_status = 'SCHEDULED'
     newappointment_date = request_data['appointment_date']
     newcustomer_note = request_data['customer_note']
     newappointment_time = request_data['appointment_time'] 
 
 
-    dateformatted = newappointment_date + ' ' + newappointment_time + ' ' + newemployee_id
+    dateformatted = newappointment_date + ' ' + newappointment_time + ' ' + str(newemployee_id)
     
     #Appointment Total added based on service_type:
     newappointment_total = request_data['appointment_total']
 
 
     #Query for inserting to appointment table:
-    query_insert_appointment = """INSERT
-    INTO Appointment ( customer_id, employee_id, appointment_date, customer_note, appointment_status, appointment_total, appointment_time) 
-    values ('%s','%s','%s','%s','%s','%s','%s')"""%(newcustid,newemployee_id, newappointment_date, newcustomer_note, newappointment_status, newappointment_total, newappointment_time)
+    query_insert_appointment = """
+    INSERT INTO Appointment (
+        customer_id,
+        employee_id,
+        appointment_date,
+        customer_note,
+        appointment_status,
+        appointment_total,
+        appointment_time
+    ) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+"""
+
 
 
     #Code to not allow duplicate appointments:
@@ -349,7 +351,17 @@ def add_appointment():
     if dateformatted in datestimesempid:
         return 'Appointment date and time taken'
     else:
-        execute_query(conn, query_insert_appointment)
+        cursor = conn.cursor()
+        cursor.execute(query_insert_appointment, (
+    id,
+    newemployee_id,
+    newappointment_date,
+    newcustomer_note,
+    newappointment_status,
+    newappointment_total,
+    newappointment_time
+))
+        conn.commit()
         
         #get appointment ID of latest record
         query_get_appointment_ID = """SELECT appointment_id FROM Appointment ORDER BY appointment_id DESC LIMIT 1;"""
@@ -358,6 +370,9 @@ def add_appointment():
 
         #get service_id
         services = request_data['service_id']
+
+        if isinstance(services, int):
+            services = [services]
         
         for service_id in services:
             
@@ -556,7 +571,8 @@ def api_appointmentscancel():
 DATE_FORMAT(appointment_date, '%Y-%m-%d') as appointment_date, TIME_FORMAT(appointment_time, '%r') as appointment_time, appointment_status From Appointment
 join Customer
 on Appointment.customer_id = Customer.customer_id
-WHERE appointment_status = 'SCHEDULED';
+WHERE appointment_status = 'SCHEDULED'
+;
 """
  
     appointmentinfo = new_read(query)
@@ -569,6 +585,45 @@ WHERE appointment_status = 'SCHEDULED';
         appointmentdata.append(appt)
    
     return jsonify(appointmentdata)
+
+@app.route('/api/CustCancelAppointment/<string:email>', methods=['GET'])
+def api_custappointmentscancel(email):
+    #query for sql to see appointment for cancel page table:
+   
+    query = f"""SELECT appointment_id,
+                      CONCAT(Customer.first_name,' ', Customer.last_name) AS 'Name',
+                      DATE_FORMAT(appointment_date, '%Y-%m-%d') AS appointment_date,
+                      TIME_FORMAT(appointment_time, '%r') AS appointment_time,
+                      appointment_status
+               FROM Appointment
+               JOIN Customer ON Appointment.customer_id = Customer.customer_id
+               WHERE appointment_status = 'SCHEDULED' AND Customer.email = '{email}'"""
+ 
+    appointmentinfo = new_read(query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointments = [dict(row) for row in appointmentinfo]
+ 
+
+    return jsonify(appointments)
+
+@app.route('/api/findCustID/<string:email>', methods=['GET'])
+def findCustID(email):
+    #query for sql to see appointment for cancel page table:
+   
+    query = f"""SELECT customer_id from Customer
+    WHERE Customer.email = '{email}'
+    """
+ 
+    appointmentinfo = new_read(query)
+ 
+    #adds the data to a blank list then returns it with jsonify:
+ 
+    appointments = [dict(row) for row in appointmentinfo]
+ 
+
+    return jsonify(appointments)
      
 
 @app.route('/api/update/appointmentstatuscancel', methods = ['PUT'])
