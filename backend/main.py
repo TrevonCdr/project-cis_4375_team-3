@@ -768,7 +768,7 @@ def api_employeeinfo():
             employeeinfo.append(employee)       
         return jsonify(employeeinfo)
 
-
+# changes employee's active status to innactive
 @app.route('/api/employee/<int:id>/changestatusinactive', methods =['POST'])
 def change_status_inactive(id):
     update_query = "UPDATE Employee SET employee_status='INACTIVE' WHERE employee_id=%s"
@@ -778,6 +778,7 @@ def change_status_inactive(id):
 
     return redirect('http://localhost:8080/statussuccess')
 
+# changes employee's active status to active
 @app.route('/api/employee/<int:id>/changestatusactive', methods =['POST'])
 def change_status_active(id):
     update_query = "UPDATE Employee SET employee_status='ACTIVE' WHERE employee_id=%s"
